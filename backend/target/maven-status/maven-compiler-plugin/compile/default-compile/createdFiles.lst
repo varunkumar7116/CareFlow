@@ -1,0 +1,6 @@
+com\careflow\auth\User.class
+com\careflow\common\GlobalExceptionHandler.class
+com\careflow\CareFlowApplication.class
+com\careflow\auth\Role.class
+com\careflow\common\BaseEntity.class
+com\careflow\common\I18nService.class

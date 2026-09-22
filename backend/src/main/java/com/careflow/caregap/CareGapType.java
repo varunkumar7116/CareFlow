@@ -1,0 +1,10 @@
+package com.careflow.caregap;
+
+public enum CareGapType {
+    UNCONFIRMED_REFERRAL,
+    MISSED_APPOINTMENT,
+    OVERDUE_FOLLOW_UP,
+    MISSING_DIAGNOSTICS,
+    UNCONFIRMED_TRANSPORT,
+    EXPIRED_CARE_PLAN
+}
