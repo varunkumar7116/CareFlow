@@ -29,11 +29,12 @@ public class SyncService {
 
         for (SyncOperation op : incomingBatch) {
             try {
+                final SyncOperation currentOp = op;
                 // Idempotency check by entityId & operationType
                 List<SyncOperation> existing = syncRepository.findByDeviceId(op.getDeviceId());
                 boolean alreadyProcessed = existing.stream()
-                        .anyMatch(e -> e.getEntityId().equals(op.getEntityId()) &&
-                                       e.getOperationType().equals(op.getOperationType()) &&
+                        .anyMatch(e -> e.getEntityId().equals(currentOp.getEntityId()) &&
+                                       e.getOperationType().equals(currentOp.getOperationType()) &&
                                        e.getStatus() == SyncStatus.SYNCED);
 
                 if (alreadyProcessed) {

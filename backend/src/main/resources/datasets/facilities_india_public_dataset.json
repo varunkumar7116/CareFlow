@@ -1,0 +1,74 @@
+[
+  {
+    "ninId": "NIN-UP-RMP-001",
+    "name": "Rampur Primary Health Centre",
+    "facilityType": "PHC",
+    "district": "Rampur",
+    "state": "Uttar Pradesh",
+    "latitude": 28.8050,
+    "longitude": 79.0250,
+    "capabilities": "MATERNAL_CARE,GENERAL_MEDICINE,IMMUNIZATION,PHARMACY",
+    "ownership": "GOVERNMENT",
+    "contactPhone": "+915952345601"
+  },
+  {
+    "ninId": "NIN-UP-RMP-002",
+    "name": "District Hospital Rampur",
+    "facilityType": "DISTRICT_HOSPITAL",
+    "district": "Rampur",
+    "state": "Uttar Pradesh",
+    "latitude": 28.8120,
+    "longitude": 79.0320,
+    "capabilities": "OBSTETRICS,CARDIOLOGY,EMERGENCY,ICU,RADIOLOGY,LABORATORY,BLOOD_BANK,PHARMACY",
+    "ownership": "GOVERNMENT",
+    "contactPhone": "+915952345602"
+  },
+  {
+    "ninId": "NIN-UP-RMP-003",
+    "name": "Shahabad Community Health Centre",
+    "facilityType": "CHC",
+    "district": "Rampur",
+    "state": "Uttar Pradesh",
+    "latitude": 28.5420,
+    "longitude": 79.0110,
+    "capabilities": "MATERNAL_CARE,PEDIATRICS,DENTAL,LABORATORY,PHARMACY",
+    "ownership": "GOVERNMENT",
+    "contactPhone": "+915952345603"
+  },
+  {
+    "ninId": "NIN-UP-RMP-004",
+    "name": "Milak Sub-District Hospital",
+    "facilityType": "SUB_DISTRICT_HOSPITAL",
+    "district": "Rampur",
+    "state": "Uttar Pradesh",
+    "latitude": 28.6210,
+    "longitude": 79.1820,
+    "capabilities": "GENERAL_SURGERY,OBSTETRICS,EMERGENCY,LABORATORY,PHARMACY",
+    "ownership": "GOVERNMENT",
+    "contactPhone": "+915952345604"
+  },
+  {
+    "ninId": "NIN-UP-LKO-001",
+    "name": "Sanjay Gandhi Post Graduate Institute",
+    "facilityType": "TERTIARY_CARE_INSTITUTE",
+    "district": "Lucknow",
+    "state": "Uttar Pradesh",
+    "latitude": 26.7490,
+    "longitude": 80.9390,
+    "capabilities": "SUPER_SPECIALTY,CARDIOVASCULAR,NEUROLOGY,ONCOLOGY,TRAUMA_CENTER,RESEARCH",
+    "ownership": "GOVERNMENT_AUTONOMOUS",
+    "contactPhone": "+915222494000"
+  },
+  {
+    "ninId": "NIN-UP-LKO-002",
+    "name": "Dr. Ram Manohar Lohia Combined Hospital",
+    "facilityType": "DISTRICT_HOSPITAL",
+    "district": "Lucknow",
+    "state": "Uttar Pradesh",
+    "latitude": 26.8520,
+    "longitude": 80.9910,
+    "capabilities": "EMERGENCY,OBSTETRICS,ORTHOPEDICS,PEDIATRICS,BLOOD_BANK,PHARMACY",
+    "ownership": "GOVERNMENT",
+    "contactPhone": "+915222720800"
+  }
+]

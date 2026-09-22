@@ -1,5 +1,7 @@
 package com.careflow.referral;
 
+import com.careflow.government.dto.GovFacilityDTO;
+import com.careflow.government.provider.GovernmentFacilityProvider;
 import com.careflow.journey.CareJourney;
 import com.careflow.journey.CareJourneyEngine;
 import com.careflow.journey.CareJourneyRepository;
@@ -17,21 +19,31 @@ public class ReferralService {
     private final ReferralRepository referralRepository;
     private final CareJourneyEngine journeyEngine;
     private final CareJourneyRepository journeyRepository;
+    private final GovernmentFacilityProvider facilityProvider;
 
-    public ReferralService(ReferralRepository referralRepository, CareJourneyEngine journeyEngine, CareJourneyRepository journeyRepository) {
+    public ReferralService(ReferralRepository referralRepository, CareJourneyEngine journeyEngine, CareJourneyRepository journeyRepository, GovernmentFacilityProvider facilityProvider) {
         this.referralRepository = referralRepository;
         this.journeyEngine = journeyEngine;
         this.journeyRepository = journeyRepository;
+        this.facilityProvider = facilityProvider;
     }
 
     @Transactional
     public Referral createReferral(Referral referral, String actorId) {
         referral.setStatus(ReferralStatus.SENT);
+
+        // Retrieve and enrich facility metadata via Government Service Compatibility Layer
+        String targetName = referral.getTargetFacilityId();
+        Optional<GovFacilityDTO> govFac = facilityProvider.getFacilityById(referral.getTargetFacilityId());
+        if (govFac.isPresent()) {
+            targetName = govFac.get().getName() + " [" + govFac.get().getNinId() + "]";
+        }
+
         Referral saved = referralRepository.save(referral);
 
         // Progress care journey to REFERRAL stage
         if (referral.getJourneyId() != null) {
-            journeyEngine.transition(referral.getJourneyId(), TransitionAction.REFER, CareStage.REFERRAL, "Referred to facility: " + referral.getTargetFacilityId(), actorId);
+            journeyEngine.transition(referral.getJourneyId(), TransitionAction.REFER, CareStage.REFERRAL, "Referred via Government Compatibility Layer to: " + targetName, actorId);
         }
 
         return saved;

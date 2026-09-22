@@ -3,6 +3,7 @@
 *.class
 *.jar
 *.war
+*.log
 tools/
 
 # Node & Frontend
