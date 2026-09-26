@@ -1,6 +1,6 @@
-# CareFlow V1 - Closed-Loop Healthcare Coordination Platform
+# CARE FLOW — Healthcare Coordination Platform & Facility Portal
 
-CareFlow is a community-first healthcare coordination platform designed to bridge the gap between Community Health Workers (CHWs), Primary Health Centres (PHCs), District Hospitals, and patient IVR hotlines.
+CareFlow is an enterprise healthcare coordination platform connecting Primary Health Centres (PHCs), Clinics, Laboratories, District Hospitals, Community Health Workers (CHWs), and patient IVR hotlines through a secure operational facility portal and Government Service Compatibility Layer.
 
 ---
 
@@ -12,122 +12,116 @@ CareFlow is a community-first healthcare coordination platform designed to bridg
 
 ---
 
-## 2. V1 Architecture Diagram
+## 2. Platform Architecture
 
 ```
-                     CAREFLOW
-                        │
-          ┌─────────────┼─────────────┐
-          ▼             ▼             ▼
-        Web           CHW           IVR
-          │             │             │
-          └─────────────┼─────────────┘
-                        ▼
-                  CAREFLOW CORE
-                        │
-             ┌──────────┼──────────┐
-             ▼          ▼          ▼
-        Care Journey  Care Gap   Referral
-             │          │          │
-             └──────────┼──────────┘
-                        ▼
-              GOVERNMENT SERVICE
-              COMPATIBILITY LAYER
-                        │
-            ┌───────────┴───────────┐
-            ▼                       ▼
-    Prototype Dataset          Future Official
-       Provider                   Provider
-            │                       │
-            ▼                       ▼
-    Public/Official Data       Government API
+                       CARE FLOW
+                          │
+          ┌───────────────┼───────────────┐
+          ▼               ▼               ▼
+   Facility Web Portal   CHW Prototype   IVR Telephony
+   (React+TS Enterprise)  (Mobile View)   (5 Languages)
+          │               │               │
+          └───────────────┼───────────────┘
+                          ▼
+                    CAREFLOW CORE
+                          │
+             ┌────────────┼────────────┐
+             ▼            ▼            ▼
+        Care Journey   Care Gap    Referral &
+           Engine       Engine    Appointments
+             │            │            │
+             └────────────┼────────────┘
+                          ▼
+                GOVERNMENT SERVICE
+                COMPATIBILITY LAYER
+                          │
+             ┌────────────┴────────────┐
+             ▼                         ▼
+   Dataset/Managed Provider      Future Official Provider
+   (DatasetGovernmentProvider)   (OfficialGovernmentProvider)
+             │                         │
+             ▼                         ▼
+   Public OGD Dataset Snapshot      Authorized Government API
+   + Facility Operational State      (ABDM / HFR / HPR)
 ```
 
 ---
 
-## 3. Core Modules & Key Features
+## 3. Data Provenance Model (5 Categories)
 
-- **Care Journey Engine (`CareJourneyEngine.java`)**: Manages the patient lifecycle across non-linear stages (`REGISTRATION`, `SCREENING`, `REFERRAL`, `APPOINTMENT`, `FOLLOW_UP`, `COMPLETED`).
-- **Care Gap Engine (`CareGapEngine.java`)**: Automatically detects SLA breaches (e.g. unconfirmed referrals, missed follow-ups past 24h) and auto-creates actionable tasks assigned to CHWs for closed-loop care.
-- **Government Service Compatibility Layer**: Exposes `GovernmentFacilityProvider` backed by an official Open Government Data (OGD) dataset snapshot (`PROTOTYPE_DATASET`). CareFlow Core logic depends strictly on provider interface abstractions, enabling drop-in replacement by `OfficialGovernmentProvider` (`OFFICIAL_API`) without modifying core workflows.
-- **IVR Telephony Gateway (`IVRService.java`)**: Multi-language hotline (`MOCK IVR DEMONSTRATION`) supporting English, Hindi, Tamil, Telugu, and Kannada. Allows patients to query appointment/referral statuses or press `4` to dispatch urgent CHW callback tasks.
-- **Web Dashboard (`frontend/`)**: React + TypeScript application with an interactive 8-step V1 workflow runner and live IVR phone simulator.
-- **CHW Mobile Prototype (`mobile/`)**: React/Vite mobile-viewport interface displaying CHW task inbox, maternal screening form, and offline outbox synchronization indicator.
+CareFlow explicitly tags every piece of data with its provenance to eliminate silent data mixing:
 
----
-
-## 4. Integration Terminology Matrix
-
-| Term | Operational Scope & Meaning |
-| :--- | :--- |
-| `REAL CAREFLOW API` | Core CareFlow backend services running native business rules (Journeys, Care Gaps, Tasks, Patients, Referrals). |
-| `PROTOTYPE_DATASET` | Public/official Government of India OGD dataset snapshot stored in PostgreSQL and exposed via dataset-backed service providers. |
-| `DEMO_TRANSACTION` | Simulated external transactions for integration boundaries where no authorized external API is currently available (Telemedicine, Diagnostics, Transport). |
-| `OFFICIAL_API` | Reserved for future authorized live Government API integrations (e.g., ABDM, eSanjeevani Gateway). |
+1. `GOVERNMENT_REFERENCE`: Public dataset metadata from OGD India National Hospital Directory (Name, Type, District, State, Lat/Long, Ownership, NIN ID).
+2. `FACILITY_MANAGED`: Operational information maintained by facility staff (Doctor availability, Equipment status, Diagnostic tests, Operating status, Capacity beds).
+3. `CAREFLOW_TRANSACTION`: Operational workflow records (Appointments, Inter-facility referrals, Follow-ups, Care Gaps, CHW Care Tasks, Journey stages).
+4. `OFFICIAL_API`: Reserved for future authorized live government gateway integrations (ABDM/HFR/HPR).
+5. `SYNTHETIC_DEMO`: Explicitly labeled synthetic records used in demonstration scenarios.
 
 ---
 
-## 5. Provenance & Public Data Source
+## 4. Operational Facility Portal Capabilities
 
-- **Dataset Source**: Government of India Open Government Data (OGD) Platform — Directory of Government Hospitals
-- **Source Organization**: Ministry of Health and Family Welfare (MoHFW), Government of India
-- **Official Source URL**: `https://data.gov.in/resource/directory-hospitals-india`
-- **Dataset Reference**: `data.gov.in OGD Portal Catalog`
-- **Publication Date**: `2024 (OGD Annual Public Release)`
-- **Provider Mode**: `PROTOTYPE_DATASET`
-- **Data Freshness**: Static OGD Snapshot (Periodic Public Release)
+The upgraded Web Facility Portal provides operational capabilities for authorized healthcare staff:
 
-Detailed field classifications (`SOURCE_FIELD`, `DERIVED_FIELD`, `SYNTHETIC_FIELD`) are documented in [`docs/data-sources.md`](file:///e:/camphorforge/docs/data-sources.md).
+- **Dashboard**: Live operational counts for doctors, diagnostics, equipment, slots, pending referrals, overdue follow-ups, and open care gaps.
+- **Facility Profile**: Normalized side-by-side view separating Government Reference info from Facility-Managed operational info.
+- **Services Registry**: Service listings, categories, and availability status toggles.
+- **Doctors & Professionals Registry**: Staff profiles, specializations, consultation schedules, availability, and teleconsultation toggles.
+- **Equipment Registry**: Equipment tracking, categories, available quantities, status (`AVAILABLE`, `PARTIALLY_AVAILABLE`, `IN_USE`, `MAINTENANCE`, `UNAVAILABLE`), and maintenance notes.
+- **Diagnostics Registry**: Pathology & radiology test listings, turnaround times, and required equipment links.
+- **Appointment Slots**: Slot creation & capacity tracking.
+- **Referrals & Matcher**: Incoming referral management with requirement matching ("Matches referral requirements").
+- **Care Tasks & Care Gaps**: Automated safety net inbox for SLA breaches and assigned CHW tasks.
+- **Care Journey**: Interactive 13-stage lifecycle runner and history timeline.
+- **Audit Log**: Operational and security audit trail for all changes.
+- **Administration**: User role management and facility-level access boundary controls.
 
 ---
 
-## 6. Technology Stack & Verification
+## 5. Security & Facility-Level Authorization
 
-| Component | Stack | Build / Run Command | Status |
-| :--- | :--- | :--- | :--- |
-| **Backend API** | Java 21, Spring Boot 3.3, Spring Data JPA, PostgreSQL (H2 for tests) | `mvn spring-boot:run` | Executable JAR Ready |
-| **Web Dashboard** | React 18, TypeScript 5.2, Vite 5.4, Lucide Icons | `npm run dev` (Port 3000) | Built (0 Errors) |
-| **Mobile Prototype** | React 18, TypeScript 5.2, Vite 5.4 (`CHW Mobile-Viewport Prototype`) | `npm run dev` (Port 3001) | Built (0 Errors) |
-| **Test Suite** | JUnit 5 + Spring Boot Test | `mvn clean test` | **11/11 Passed** |
+- **Stateless JWT Authentication**: JWT tokens signed with SHA-256 HMAC containing role and `facilityId` claims.
+- **Role-Based Access Control (RBAC)**: Enforces `FACILITY_ADMIN`, `DOCTOR`, `FACILITY_STAFF`, `CHW`, `DISTRICT_SUPERVISOR`, `SYSTEM_ADMIN`, `ADMIN`.
+- **Facility Access Boundary**: Facility staff can ONLY modify data belonging to their authorized facility. (e.g. Facility A admin cannot edit Facility B equipment or doctors).
+- **Password Hashing**: BCrypt password hashing. Government credentials are NEVER imported or stored.
+
+---
+
+## 6. Working Prototype & Honest System Stack
+
+### WORKING V1
+- **Spring Boot Backend**: Java 17 / 21 REST API with PostgreSQL / H2 database.
+- **Facility Portal**: React 18 + TypeScript 5.2 + Vite 5.4 enterprise UI.
+- **30/30 Passing Test Suite**: Automated JUnit 5 integration & unit test suite (`mvn test`).
+- **Data Provenance**: Explicit metadata DTOs across all facility endpoints.
+- **IVR Telephony Simulator**: 5-language DTMF state machine (`IVRService.java`).
+
+### PROTOTYPE LIMITATIONS
+- **Government Facility Data**: Static Open Government Data (OGD) snapshot (`facilities_india_public_dataset.json`).
+- **Live Government APIs**: No active live HFR / HPR / ABDM API connection (ready for drop-in when authorization is granted).
+- **IVR Telephony**: REST mock telephony simulator (no PSTN / SIP gateway).
+- **Mobile Prototype**: React/Vite web prototype styled as mobile viewport.
 
 ---
 
 ## 7. 5-Minute Quickstart Guide
 
-### Prerequisites
-- JDK 17 / 21
-- Node.js 18+
-- Apache Maven (Included in `tools/apache-maven-3.9.6`)
-
-### Step 1: Start Backend API (Port 8080)
-```powershell
-cd backend
-..\tools\apache-maven-3.9.6\bin\mvn.cmd spring-boot:run
-```
-
-### Step 2: Start Web Dashboard (Port 3000)
-```powershell
-cd frontend
-npm run dev
-```
-
-### Step 3: Start Mobile Prototype (Port 3001)
-```powershell
-cd mobile
-npm run dev
-```
-
-### Step 4: Run Automated Tests
+### Step 1: Run Backend Automated Tests
 ```powershell
 cd backend
 ..\tools\apache-maven-3.9.6\bin\mvn.cmd clean test
 ```
 
----
+### Step 2: Start Backend API (Port 8080)
+```powershell
+cd backend
+..\tools\apache-maven-3.9.6\bin\mvn.cmd spring-boot:run
+```
 
-## 8. Documentation Quick Links
-
-- [Walkthrough & Verification Report](file:///C:/Users/varun/.gemini/antigravity-ide/brain/c9cde9c0-38d1-4f43-8fc5-c35afe193c56/walkthrough.md)
-- [Government Service Integration Architecture](file:///e:/camphorforge/docs/government-service-integration.md)
-- [Data Sources & Provenance Metadata](file:///e:/camphorforge/docs/data-sources.md)
-- [System Architecture Specification](file:///e:/camphorforge/docs/ARCHITECTURE.md)
+### Step 3: Start Web Facility Portal (Port 3000)
+```powershell
+cd frontend
+npm run build
+npm run dev
+```

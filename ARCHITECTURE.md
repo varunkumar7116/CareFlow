@@ -1,81 +1,78 @@
-# CareFlow Architecture Specification
+# CareFlow System Architecture Specification
 
-## 1. System Overview & Core Principle
+## 1. System Overview & Healthcare Safety Principle
 
-CareFlow is a community-first healthcare coordination platform connecting Community Health Workers (CHWs), Primary Health Centres (PHCs), District Hospitals, and patient IVR hotlines.
+CareFlow is a community-first healthcare coordination platform designed to bridge Primary Health Centres (PHCs), Clinics, Laboratories, District Hospitals, Community Health Workers (CHWs), and patient IVR hotlines.
 
 > [!IMPORTANT]
 > **Most Important Product Principle**:
-> CareFlow does NOT replace existing healthcare services. CareFlow **ACCESSes** them, **CONNECTs** to them, **COORDINATEs** them, **TRACKs** the care journey, **IDENTIFIEs** gaps, and **SUPPORTs** follow-up. Existing healthcare facilities and clinicians remain fully responsible for providing actual healthcare.
+> CareFlow does NOT replace existing healthcare services. CareFlow **ACCESSes** them, **CONNECTs** to them, **COORDINATEs** them, **TRACKs** the care journey, **IDENTIFIEs** gaps, and **SUPPORTs** follow-up care. Existing healthcare facilities and clinicians remain fully responsible for providing actual healthcare.
 
 ---
 
-## 2. Overall V1 Architecture Diagram
+## 2. Platform Architecture Diagram
 
 ```
-                     CAREFLOW
-                        │
-          ┌─────────────┼─────────────┐
-          ▼             ▼             ▼
-        Web           CHW           IVR
-          │             │             │
-          └─────────────┼─────────────┘
-                        ▼
-                  CAREFLOW CORE
-                        │
-             ┌──────────┼──────────┐
-             ▼          ▼          ▼
-        Care Journey  Care Gap   Referral
-             │          │          │
-             └──────────┼──────────┘
-                        ▼
-              GOVERNMENT SERVICE
-              COMPATIBILITY LAYER
-                        │
-            ┌───────────┴───────────┐
-            ▼                       ▼
-    Prototype Dataset          Future Official
-       Provider                   Provider
-            │                       │
-            ▼                       ▼
-    Public/Official Data       Government API
+                       CARE FLOW
+                          │
+          ┌───────────────┼───────────────┐
+          ▼               ▼               ▼
+   Facility Web Portal   CHW Prototype   IVR Telephony
+   (React+TS Enterprise)  (Mobile View)   (5 Languages)
+          │               │               │
+          └───────────────┼───────────────┘
+                          ▼
+                    CAREFLOW CORE
+                          │
+             ┌────────────┼────────────┐
+             ▼            ▼            ▼
+        Care Journey   Care Gap    Referral &
+           Engine       Engine    Appointments
+             │            │            │
+             └────────────┼────────────┘
+                          ▼
+                GOVERNMENT SERVICE
+                COMPATIBILITY LAYER
+                          │
+             ┌────────────┴────────────┐
+             ▼                         ▼
+   Dataset/Managed Provider      Future Official Provider
+   (DatasetGovernmentProvider)   (OfficialGovernmentProvider)
+             │                         │
+             ▼                         ▼
+   Public OGD Dataset Snapshot      Authorized Government API
+   + Facility Operational State      (ABDM / HFR / HPR)
 ```
 
 ---
 
-## 3. Technology Verification & Honest System Stack
+## 3. Technology Stack & Verification
 
-- **Backend API**: Java 21 + Spring Boot 3.3. REST API, Care Journey Engine, Care Gap Engine, IVR Gateway, Audit Logging.
+- **Backend Framework**: Java 17 / 21 + Spring Boot 3.3. REST APIs, Care Journey Engine, Care Gap Engine, IVR Gateway, Audit Logging.
 - **Database**: PostgreSQL 16 (Runtime source of truth), H2 in-memory (Test profile).
-- **Web Dashboard**: React 18 + TypeScript 5.2 + Vite 5.4. Interactive 8-step workflow runner & IVR simulator.
-- **CHW Mobile**: React / Vite Web Prototype styled as mobile viewport (`CHW Mobile-Viewport Prototype`).
-- **Offline Storage**: Offline workflow prototype with synchronization-state simulation.
-- **IVR Telephony**: Native Java state machine supporting 5 Indian languages (`MOCK IVR DEMONSTRATION`).
+- **Web Facility Portal**: React 18 + TypeScript 5.2 + Vite 5.4. Enterprise institutional portal with real backend integration.
+- **Security & Authorization**: JWT authentication filter (`JwtAuthenticationFilter`), BCrypt password encoder, method-level RBAC (`@PreAuthorize`), and facility-level access boundaries.
+- **Test Suite**: 30/30 passing JUnit 5 tests covering facility retrieval, service CRUD, doctor CRUD, equipment CRUD, diagnostics CRUD, availability updates, facility-level authorization, role authorization, referral matching, and audit logging.
 
 ---
 
-## 4. Provider Replacement Architecture
+## 4. Government Compatibility Layer & Provider Architecture
 
-```mermaid
-flowchart TD
-    subgraph Current V1 Architecture
-        C1[CareFlow Core] --> G1[Government Service Compatibility Layer]
-        G1 --> P1[DatasetGovernmentProvider<br/>PROTOTYPE_DATASET]
-        P1 --> D1[(PostgreSQL DB<br/>OGD India Dataset Snapshot)]
-    end
+CareFlow Core business logic strictly depends on provider interface contracts, enabling seamless adapter replacement without modifying core business rules:
 
-    subgraph Future Phase Architecture
-        C2[CareFlow Core] --> G2[Government Service Compatibility Layer]
-        G2 --> P2[OfficialGovernmentProvider<br/>OFFICIAL_API]
-        P2 --> D2[Official Government API Gateway]
-    end
-```
+- `GovernmentFacilityProvider`: Interface contract implemented by `DatasetGovernmentProvider` (backed by PostgreSQL OGD snapshot) and `OfficialGovernmentProvider` (future live ABDM/HFR API adapter).
+- `HealthcareProfessionalProvider`: Interface contract implemented by `DatasetProfessionalProvider` (backed by PostgreSQL facility-managed doctor registry) and `OfficialGovernmentProfessionalProvider` (future HPR API adapter).
+- `GovernmentDiagnosticProvider`, `GovernmentTelemedicineProvider`, `GovernmentTransportProvider`: Provider contracts for lab orders, teleconsultations, and emergency ambulance dispatches.
 
 ---
 
-## 5. Integration Terminology
+## 5. Data Provenance & Staleness Architecture
 
-- `REAL CAREFLOW API`: Core backend services executing native business logic.
-- `PROTOTYPE_DATASET`: Verified public/official dataset snapshot (data.gov.in OGD India) used as temporary service provider.
-- `DEMO_TRANSACTION`: Simulated external transaction for integration boundaries without live API access.
-- `OFFICIAL_API`: Reserved for future authorized live Government API integrations.
+CareFlow classifies all data into 5 explicit categories:
+1. `GOVERNMENT_REFERENCE` (Public OGD dataset metadata)
+2. `FACILITY_MANAGED` (Facility staff operational data)
+3. `CAREFLOW_TRANSACTION` (Workflow transaction records)
+4. `OFFICIAL_API` (Future authorized live API gateway data)
+5. `SYNTHETIC_DEMO` (Demonstration data)
+
+Operational updates display explicit timestamps ("Last verified 25 Sep 2026, 10:35 AM"). If operational data is older than 24 hours, the UI automatically flags it as potentially outdated.

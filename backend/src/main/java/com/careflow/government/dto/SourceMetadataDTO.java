@@ -1,9 +1,11 @@
 package com.careflow.government.dto;
 
+import com.careflow.common.SourceType;
 import java.time.ZonedDateTime;
 
 public class SourceMetadataDTO {
 
+    private SourceType sourceType;
     private String sourceName;
     private String sourceOrganization;
     private String datasetTitle;
@@ -13,10 +15,17 @@ public class SourceMetadataDTO {
     private ProviderMode providerMode;
     private String dataFreshness;
     private String metadataLabel;
+    private String sourceStatus;
+    private Boolean isLive;
 
-    public SourceMetadataDTO() {}
+    public SourceMetadataDTO() {
+        this.sourceType = SourceType.GOVERNMENT_REFERENCE;
+        this.isLive = false;
+        this.sourceStatus = "PUBLIC_DATASET";
+    }
 
     public SourceMetadataDTO(String sourceName, String sourceOrganization, String datasetTitle, String sourceReference, String publicationDate, ZonedDateTime importTimestamp, ProviderMode providerMode, String dataFreshness) {
+        this.sourceType = SourceType.GOVERNMENT_REFERENCE;
         this.sourceName = sourceName;
         this.sourceOrganization = sourceOrganization;
         this.datasetTitle = datasetTitle;
@@ -25,8 +34,22 @@ public class SourceMetadataDTO {
         this.importTimestamp = importTimestamp;
         this.providerMode = providerMode;
         this.dataFreshness = dataFreshness;
+        this.sourceStatus = "PUBLIC_DATASET";
+        this.isLive = false;
         this.metadataLabel = "Prototype Government Service | Source: Public/Official Dataset (" + datasetTitle + ")";
     }
+
+    public SourceMetadataDTO(SourceType sourceType, String sourceName, String sourceStatus, Boolean isLive, String dataFreshness) {
+        this.sourceType = sourceType;
+        this.sourceName = sourceName;
+        this.sourceStatus = sourceStatus;
+        this.isLive = isLive;
+        this.dataFreshness = dataFreshness;
+        this.metadataLabel = sourceType.name() + " | " + sourceName;
+    }
+
+    public SourceType getSourceType() { return sourceType; }
+    public void setSourceType(SourceType sourceType) { this.sourceType = sourceType; }
 
     public String getSourceName() { return sourceName; }
     public void setSourceName(String sourceName) { this.sourceName = sourceName; }
@@ -54,4 +77,10 @@ public class SourceMetadataDTO {
 
     public String getMetadataLabel() { return metadataLabel; }
     public void setMetadataLabel(String metadataLabel) { this.metadataLabel = metadataLabel; }
+
+    public String getSourceStatus() { return sourceStatus; }
+    public void setSourceStatus(String sourceStatus) { this.sourceStatus = sourceStatus; }
+
+    public Boolean getIsLive() { return isLive; }
+    public void setIsLive(Boolean isLive) { this.isLive = isLive; }
 }

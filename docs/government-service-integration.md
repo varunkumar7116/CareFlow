@@ -1,81 +1,74 @@
-# Government Service Compatibility Layer Documentation
+# Government Service Compatibility Layer Specification
 
-The **CareFlow Government Service Compatibility Layer** provides an interim integration interface connecting CareFlow Core to public healthcare facility directories and external government services.
+The **CareFlow Government Service Compatibility Layer** decouples CareFlow Core workflows from external facility directories and government health infrastructure via clean interface abstractions.
 
 ---
 
-## 1. Most Important Product Principle
+## 1. Core Principle & Architectural Boundaries
 
 > [!IMPORTANT]
 > **CareFlow does NOT replace existing healthcare services.**
-> CareFlow **ACCESSes** them, **CONNECTs** to them, **COORDINATEs** them, **TRACKs** the care journey, **IDENTIFIEs** care gaps, and **SUPPORTs** follow-up care. Existing healthcare facilities and providers remain fully responsible for providing actual clinical care.
+> CareFlow **ACCESSes** them, **CONNECTs** to them, **COORDINATEs** them, **TRACKs** the care journey, **IDENTIFIEs** care gaps, and **SUPPORTs** follow-up care. Existing healthcare facilities and Clinicians remain fully responsible for providing actual medical care.
 
 ---
 
-## 2. Provider Architecture & Dependency Direction
+## 2. Provider Abstraction Architecture
 
-The business logic in CareFlow Core depends strictly on interface contracts (`GovernmentFacilityProvider`), never directly on dataset files, raw SQL queries, or provider-specific implementations.
+CareFlow Core business logic strictly depends on provider interface contracts, never directly on raw JSON datasets or vendor-specific SQL schemas.
 
-```mermaid
-flowchart TD
-    subgraph CareFlow Core
-        Journey[Care Journey Engine]
-        Referral[Referral Service]
-        Gap[Care Gap Engine]
-    end
-
-    subgraph Government Service Compatibility Layer
-        Interface[GovernmentFacilityProvider Interface]
-    end
-
-    subgraph Providers
-        DatasetProvider[DatasetGovernmentProvider<br/>PROTOTYPE_DATASET]
-        OfficialProvider[OfficialGovernmentProvider<br/>OFFICIAL_API]
-    end
-
-    subgraph Storage / External
-        Postgres[(PostgreSQL Database)]
-        GovAPI[Official Government API Gateway]
-    end
-
-    Journey --> Interface
-    Referral --> Interface
-    Gap --> Interface
-
-    Interface -. Current V1 .-> DatasetProvider
-    Interface -. Future Phase .-> OfficialProvider
-
-    DatasetProvider --> Postgres
-    OfficialProvider --> GovAPI
+```
+CareFlow Core (Journeys, Referrals, Appointments, Care Gaps)
+    ↓
+Government Compatibility Layer
+    ↓
+Provider Interfaces
+  - GovernmentFacilityProvider
+  - HealthcareProfessionalProvider
+  - GovernmentDiagnosticProvider
+  - GovernmentTelemedicineProvider
+  - GovernmentTransportProvider
+    ↓
+Dataset/Facility-Managed Implementations (Current V1)
+  - DatasetGovernmentProvider (Primary)
+  - DatasetProfessionalProvider (Primary)
+    OR
+Official API Implementations (Future)
+  - OfficialGovernmentProvider (Future Placeholder)
+  - OfficialGovernmentProfessionalProvider (Future Placeholder)
 ```
 
 ---
 
-## 3. Integration Terminology Definitions
+## 3. Provider Contracts & Operational Modes
 
-| Term | Operational Scope & Meaning |
-| :--- | :--- |
-| `REAL CAREFLOW API` | Production CareFlow backend endpoints executing native business rules (Journeys, Care Gaps, Tasks, Patients, Referrals). |
-| `PROTOTYPE_DATASET` | Public/official Government of India OGD dataset snapshot stored in PostgreSQL and exposed via dataset-backed service providers. |
-| `DEMO_TRANSACTION` | Simulated external transactions for integration boundaries where no authorized external API is currently available (Telemedicine, Diagnostics, Transport). |
-| `OFFICIAL_API` | Reserved for future authorized live Government API integrations (e.g., ABDM, eSanjeevani Gateway). |
-
----
-
-## 4. Extension Points for External Services
-
-| Service Domain | Interface Contract | Adapter Mode | Default Contract Output |
-| :--- | :--- | :--- | :--- |
-| **Facility Directory** | `GovernmentFacilityProvider` | `PROTOTYPE_DATASET` | 6 OGD Public Facility Records in PostgreSQL |
-| **Telemedicine** | `GovernmentTelemedicineProvider` | `DEMO_TRANSACTION` | Mock eSanjeevani Tele-consultation Request Response |
-| **Referrals** | `GovernmentReferralProvider` | `DEMO_TRANSACTION` | Mock National Health Referral Response |
-| **Diagnostics** | `GovernmentDiagnosticProvider` | `DEMO_TRANSACTION` | Mock National Health Lab Order Response |
-| **Emergency Transport** | `GovernmentTransportProvider` | `DEMO_TRANSACTION` | Mock 108 Ambulance Fleet Dispatch Response |
+| Interface Contract | Current Active Provider Mode | Default Provider Output |
+| :--- | :--- | :--- |
+| `GovernmentFacilityProvider` | `PROTOTYPE_DATASET` | 7 MoHFW OGD Public Facility Records in PostgreSQL (`GovFacilityEntity`) |
+| `HealthcareProfessionalProvider` | `PROTOTYPE_DATASET` | Facility-managed doctor & specialist registry (`HealthcareProfessional`) |
+| `GovernmentDiagnosticProvider` | `DEMO_TRANSACTION` | Facility-managed diagnostic services (`FacilityDiagnosticService`) |
+| `GovernmentTelemedicineProvider` | `DEMO_TRANSACTION` | Simulated eSanjeevani teleconsultation request |
+| `GovernmentTransportProvider` | `DEMO_TRANSACTION` | Simulated 108 Emergency Ambulance dispatch |
 
 ---
 
-## 5. REST Endpoints
+## 4. Facility-Level Role-Based Access Control (RBAC)
 
-- `GET /api/v1/gov/facilities` — Retrieve list of government facilities (optional `district`, `type`, `search` parameters).
-- `GET /api/v1/gov/facilities/{id}` — Retrieve facility by NIN ID or primary key.
-- `GET /api/v1/gov/integration/status` — Returns active provider mode (`PROTOTYPE_DATASET`), latency, invocation count, and metadata.
+CareFlow enforces strict facility-level boundary checks on all operational endpoints:
+
+1. **`FACILITY_ADMIN` / `FACILITY_STAFF` / `DOCTOR`**: Can ONLY modify operational data (doctors, services, equipment, diagnostics, slots) for their assigned `facilityId`. Any attempt to edit another facility's data produces `403 Forbidden` (`AccessDeniedException`).
+2. **`DISTRICT_SUPERVISOR` / `SUPERVISOR` / `DISTRICT_OFFICER`**: Can view and monitor operational status across facilities within their assigned district supervisory scope.
+3. **`SYSTEM_ADMIN` / `ADMIN`**: Platform administration across all facilities.
+
+---
+
+## 5. REST APIs & Provenance Metadata
+
+- `GET /api/v1/gov/facilities` — Retrieve reference facility list (supports `district`, `facilityType`, `search`).
+- `GET /api/v1/facilities/{facilityId}/details` — Normalized facility details DTO (Government Reference + Facility Managed data).
+- `GET /api/v1/facilities/{facilityId}/dashboard` — Aggregated operational dashboard summary (doctors, diagnostics, equipment, slots, pending referrals, overdue followups).
+- `GET /api/v1/facilities/{facilityId}/services` & `POST/PUT/DELETE` — Services registry.
+- `GET /api/v1/facilities/{facilityId}/professionals` & `POST/PUT/DELETE` — Doctors & staff registry.
+- `GET /api/v1/facilities/{facilityId}/equipment` & `POST/PUT/DELETE` — Equipment & maintenance registry.
+- `GET /api/v1/facilities/{facilityId}/diagnostics` & `POST/PUT/DELETE` — Diagnostics & tests registry.
+- `GET /api/v1/facilities/{facilityId}/appointments/slots` & `POST/PUT` — Appointment slots registry.
+- `GET /api/v1/facilities/{facilityId}/matching` — Requirement matching ("Matches referral requirements").

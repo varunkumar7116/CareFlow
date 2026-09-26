@@ -36,7 +36,7 @@ export const IVRSimulatorModal: React.FC<IVRSimulatorModalProps> = ({ isOpen, on
         language: language
       });
 
-      const res = await fetch(`http://localhost:8080/api/v1/ivr/call?${query}`, {
+      const res = await fetch(`http://localhost:8085/api/v1/ivr/call?${query}`, {
         method: 'POST'
       });
 
@@ -48,10 +48,10 @@ export const IVRSimulatorModal: React.FC<IVRSimulatorModalProps> = ({ isOpen, on
         setOptions(data.availableOptions || []);
         setCallEnded(data.callEnded);
       } else {
-        setPromptMessage('Simulated IVR Connection Error. Please verify backend is running on port 8080.');
+        setPromptMessage('Simulated IVR Connection Error. Please verify backend is running on port 8085.');
       }
     } catch (err) {
-      setPromptMessage('CareFlow Mock IVR: Connected to backend on port 8080.');
+      setPromptMessage('CareFlow Mock IVR: Connected to backend on port 8085.');
     } finally {
       setLoading(false);
     }

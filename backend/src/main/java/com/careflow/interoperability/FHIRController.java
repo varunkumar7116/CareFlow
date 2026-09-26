@@ -6,12 +6,14 @@ import com.careflow.patient.Patient;
 import com.careflow.patient.PatientRepository;
 import com.careflow.referral.Referral;
 import com.careflow.referral.ReferralRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/interoperability/fhir")
+@PreAuthorize("hasAnyRole('FACILITY_STAFF', 'DISTRICT_OFFICER', 'ADMIN', 'SYSTEM_ADMIN')")
 public class FHIRController {
 
     private final PatientRepository patientRepository;

@@ -10,7 +10,7 @@ CareFlow is a community-first healthcare coordination platform connecting Commun
 
 ---
 
-## 2. Overall V1 Architecture Diagram
+## 2. V1 Architecture Overview
 
 ```
                      CAREFLOW
@@ -56,26 +56,36 @@ CareFlow is a community-first healthcare coordination platform connecting Commun
 
 ## 4. Provider Replacement Architecture
 
-```mermaid
-flowchart TD
-    subgraph Current V1 Architecture
-        C1[CareFlow Core] --> G1[Government Service Compatibility Layer]
-        G1 --> P1[DatasetGovernmentProvider<br/>PROTOTYPE_DATASET]
-        P1 --> D1[(PostgreSQL DB<br/>OGD India Dataset Snapshot)]
-    end
+```
+Current V1:
 
-    subgraph Future Phase Architecture
-        C2[CareFlow Core] --> G2[Government Service Compatibility Layer]
-        G2 --> P2[OfficialGovernmentProvider<br/>OFFICIAL_API]
-        P2 --> D2[Official Government API Gateway]
-    end
+                  CAREFLOW
+                      ↓
+       Government Service Interface
+                      ↓
+          Current V1 Provider (DatasetGovernmentProvider)
+                      ↓
+       Verified Public/Official Data (PostgreSQL OGD Snapshot)
+
+
+Future Phase:
+
+                  CAREFLOW
+                      ↓
+       Government Service Interface
+                      ↓
+          Official API Provider (OfficialGovernmentProvider)
+                      ↓
+          Authorized Government API (e.g. ABDM Gateway)
 ```
 
 ---
 
-## 5. Integration Terminology
+## 5. Provenance Metadata & Source URL
 
-- `REAL CAREFLOW API`: Core backend services executing native business logic.
-- `PROTOTYPE_DATASET`: Verified public/official dataset snapshot (data.gov.in OGD India) used as temporary service provider.
-- `DEMO_TRANSACTION`: Simulated external transaction for integration boundaries without live API access.
-- `OFFICIAL_API`: Reserved for future authorized live Government API integrations.
+- **Catalogue**: Hospital Directory (National Health Portal)
+- **Resource Title**: National Hospital Directory with Geo Code and additional parameters
+- **Publishing Organization**: Ministry of Health and Family Welfare (MoHFW) / National Health Portal (NHP), Government of India
+- **Official Source URL**: `https://www.data.gov.in/resource/national-hospital-directory-geo-code-and-additional-parameters-updated-till-last-month`
+- **Published Date**: `10/08/2017` | **Updated Date**: `02/06/2025`
+- **Provider Mode**: `PROTOTYPE_DATASET`

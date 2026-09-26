@@ -2,6 +2,7 @@ package com.careflow.auth;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Map;
 
 @RestController
@@ -18,8 +19,8 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
         String username = request.get("username");
         String password = request.get("password");
-        String token = authService.login(username, password);
-        return ResponseEntity.ok(Map.of("token", token, "username", username));
+        Map<String, Object> details = authService.loginDetails(username, password);
+        return ResponseEntity.ok(details);
     }
 
     @PostMapping("/register")

@@ -4,5 +4,6 @@ public enum FollowUpStatus {
     SCHEDULED,
     COMPLETED,
     MISSED,
+    OVERDUE,
     CANCELLED
 }

@@ -1,5 +1,17 @@
 [
   {
+    "ninId": "NIN-TN-CBE-001",
+    "name": "Government PHC, Karamadai",
+    "facilityType": "PHC",
+    "district": "Coimbatore",
+    "state": "Tamil Nadu",
+    "latitude": 11.2435,
+    "longitude": 76.9602,
+    "capabilities": "MATERNAL_CARE,GENERAL_MEDICINE,IMMUNIZATION,ULTRASOUND,PHARMACY",
+    "ownership": "GOVERNMENT",
+    "contactPhone": "+914254272100"
+  },
+  {
     "ninId": "NIN-UP-RMP-001",
     "name": "Rampur Primary Health Centre",
     "facilityType": "PHC",

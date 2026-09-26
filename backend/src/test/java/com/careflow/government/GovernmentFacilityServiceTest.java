@@ -105,10 +105,10 @@ public class GovernmentFacilityServiceTest {
 
         GovFacilityDTO dto = facility.get();
         assertNotNull(dto.getSourceMetadata(), "Source metadata must not be null");
-        assertEquals("Government of India Open Government Data (OGD) Platform - Directory of Government Hospitals", dto.getSourceMetadata().getSourceName());
-        assertEquals("Ministry of Health and Family Welfare (MoHFW), Government of India", dto.getSourceMetadata().getSourceOrganization());
-        assertEquals("https://data.gov.in/resource/directory-hospitals-india", dto.getSourceMetadata().getSourceReference());
-        assertEquals("2024 (OGD Annual Public Release)", dto.getSourceMetadata().getPublicationDate());
+        assertEquals("Government of India Open Government Data (OGD) Platform - Hospital Directory", dto.getSourceMetadata().getSourceName());
+        assertEquals("Ministry of Health and Family Welfare (MoHFW) / National Health Portal (NHP), Government of India", dto.getSourceMetadata().getSourceOrganization());
+        assertEquals("https://www.data.gov.in/resource/national-hospital-directory-geo-code-and-additional-parameters-updated-till-last-month", dto.getSourceMetadata().getSourceReference());
+        assertEquals("Published: 10/08/2017 | Updated: 02/06/2025", dto.getSourceMetadata().getPublicationDate());
         assertEquals(ProviderMode.PROTOTYPE_DATASET, dto.getSourceMetadata().getProviderMode());
     }
 

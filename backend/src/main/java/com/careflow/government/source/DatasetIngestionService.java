@@ -63,14 +63,14 @@ public class DatasetIngestionService {
                         rec.capabilities,
                         rec.ownership != null ? rec.ownership : "GOVERNMENT",
                         rec.contactPhone,
-                        "Government of India Open Government Data (OGD) Platform - Directory of Government Hospitals",
-                        "Ministry of Health and Family Welfare (MoHFW), Government of India",
-                        "Directory of Hospitals across India (data.gov.in OGD Portal)",
-                        "https://data.gov.in/resource/directory-hospitals-india",
-                        "2024 (OGD Annual Public Release)",
+                        "Government of India Open Government Data (OGD) Platform - Hospital Directory",
+                        "Ministry of Health and Family Welfare (MoHFW) / National Health Portal (NHP), Government of India",
+                        "Hospital Directory (National Health Portal) - National Hospital Directory with Geo Code",
+                        "https://www.data.gov.in/resource/national-hospital-directory-geo-code-and-additional-parameters-updated-till-last-month",
+                        "Published: 10/08/2017 | Updated: 02/06/2025",
                         now,
                         ProviderMode.PROTOTYPE_DATASET,
-                        "Static OGD Snapshot (Periodic Public Release)"
+                        "Static OGD Snapshot (Updated 02/06/2025)"
                 );
 
                 facilityRepository.save(entity);
