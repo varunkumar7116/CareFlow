@@ -254,7 +254,7 @@ export const FacilityViews: React.FC<ViewsProps> = ({
   // Breadcrumb renderer
   const renderBreadcrumb = (currentView: string) => (
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.775rem', color: '#64748b', marginBottom: '0.5rem' }}>
-      <span>Portal</span>
+      <span>{t.breadcrumbPortal}</span>
       <ChevronRight size={12} />
       <span>{govRef.name}</span>
       <ChevronRight size={12} />
@@ -269,11 +269,11 @@ export const FacilityViews: React.FC<ViewsProps> = ({
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-        {renderBreadcrumb('Operational Dashboard')}
+        {renderBreadcrumb(t.breadcrumbDashboard)}
 
         <ProvenanceBanner
           sourceType="GOVERNMENT_REFERENCE & FACILITY_MANAGED"
-          sourceName="National Hospital Directory (MoHFW) + CareFlow Operational Registry"
+          sourceName={t.infoSourceLabel}
           sourceStatus="PUBLIC_DATASET / FACILITY_MANAGED"
           isLive={false}
           lastUpdated="02/06/2025"
@@ -287,42 +287,42 @@ export const FacilityViews: React.FC<ViewsProps> = ({
             <div className="kpi-value" style={{ fontSize: '1.25rem', color: '#166534' }}>
               {opStatus.operatingStatus === 'OPERATIONAL' ? t.statusOperational : opStatus.operatingStatus}
             </div>
-            <div className="kpi-sub">Beds Available: {opStatus.capacityAvailableBeds} / {opStatus.capacityTotalBeds}</div>
+            <div className="kpi-sub">{t.bedsAvailableLabel}: {opStatus.capacityAvailableBeds} / {opStatus.capacityTotalBeds}</div>
           </div>
 
           <div className="kpi-card" style={{ borderTopColor: '#16a34a' }}>
             <div className="kpi-label">{t.activeDoctors}</div>
             <div className="kpi-value">
               {dashboardSummary?.availableDoctors ?? professionals.filter((p: any) => p.availabilityStatus === 'AVAILABLE').length}
-              <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}> / {dashboardSummary?.totalDoctors || professionals.length || 3} Active</span>
+              <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}> / {dashboardSummary?.totalDoctors || professionals.length || 3} {t.activeSuffix}</span>
             </div>
-            <div className="kpi-sub">Facility-Managed Operational Registry</div>
+            <div className="kpi-sub">{t.docRegistrySub}</div>
           </div>
 
           <div className="kpi-card" style={{ borderTopColor: '#d97706' }}>
             <div className="kpi-label">{t.diagnosticsTitle}</div>
             <div className="kpi-value">
               {dashboardSummary?.availableDiagnostics ?? diagnostics.filter((d: any) => d.availability === 'AVAILABLE').length}
-              <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}> / {dashboardSummary?.totalDiagnostics || diagnostics.length || 4} Available</span>
+              <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}> / {dashboardSummary?.totalDiagnostics || diagnostics.length || 4} {t.diagAvailableSuffix}</span>
             </div>
-            <div className="kpi-sub">Pathology & Radiology Active</div>
+            <div className="kpi-sub">{t.diagSub}</div>
           </div>
 
           <div className="kpi-card" style={{ borderTopColor: '#0891b2' }}>
             <div className="kpi-label">{t.equipmentAvailable}</div>
             <div className="kpi-value">
               {availEqCount}
-              <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}> / {totalEqCount} Operational</span>
+              <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}> / {totalEqCount} {t.eqOperationalSuffix}</span>
             </div>
-            <div className="kpi-sub">Medical Equipment Inventory</div>
+            <div className="kpi-sub">{t.eqSub}</div>
           </div>
 
           <div className="kpi-card" style={{ borderTopColor: '#9333ea' }}>
-            <div className="kpi-label">Appointment Slots</div>
+            <div className="kpi-label">{t.appointmentSlotsTitle}</div>
             <div className="kpi-value">
               {dashboardSummary?.totalSlotsAvailable ?? slots.length ?? 3}
             </div>
-            <div className="kpi-sub">CareFlow Transaction Slots</div>
+            <div className="kpi-sub">{t.appointmentSlotsSub}</div>
           </div>
         </div>
 
@@ -331,7 +331,7 @@ export const FacilityViews: React.FC<ViewsProps> = ({
             <div className="gov-card-header">
               <div className="gov-card-title">
                 <Send size={18} color="#0284c7" />
-                <span>Pending Referral Actions</span>
+                <span>{t.pendingReferralsTitle}</span>
               </div>
               <span className="provenance-tag">CAREFLOW_TRANSACTION</span>
             </div>
@@ -340,10 +340,10 @@ export const FacilityViews: React.FC<ViewsProps> = ({
                 <table className="gov-table">
                   <thead>
                     <tr>
-                      <th>Patient</th>
-                      <th>Specialty Required</th>
-                      <th>Status</th>
-                      <th>Action</th>
+                      <th>{t.patientName}</th>
+                      <th>{t.colSpecialization}</th>
+                      <th>{t.colStatus}</th>
+                      <th>{t.colActions}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -354,7 +354,7 @@ export const FacilityViews: React.FC<ViewsProps> = ({
                         <td><span className="badge badge-limited">{r.status}</span></td>
                         <td>
                           <button className="btn-gov" style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }} onClick={() => onRunDemoStep(4)}>
-                            Accept & Book Slot
+                            {t.actionSubmit}
                           </button>
                         </td>
                       </tr>
@@ -365,7 +365,7 @@ export const FacilityViews: React.FC<ViewsProps> = ({
             ) : (
               <div style={{ padding: '1.5rem', textAlign: 'center', color: '#64748b', fontSize: '0.85rem' }}>
                 <Info size={24} style={{ marginBottom: '0.4rem', opacity: 0.6 }} />
-                <p>No pending inter-facility referrals requiring action.</p>
+                <p>{t.noPendingReferralsMsg}</p>
               </div>
             )}
           </div>
@@ -374,7 +374,7 @@ export const FacilityViews: React.FC<ViewsProps> = ({
             <div className="gov-card-header">
               <div className="gov-card-title">
                 <AlertTriangle size={18} color="#dc2626" />
-                <span>Active Safety Net Gaps & Tasks</span>
+                <span>{t.safetyNetGapsTitle}</span>
               </div>
               <span className="provenance-tag">CAREFLOW_TRANSACTION</span>
             </div>
@@ -383,19 +383,19 @@ export const FacilityViews: React.FC<ViewsProps> = ({
                 <table className="gov-table">
                   <thead>
                     <tr>
-                      <th>Gap Description</th>
-                      <th>Priority</th>
-                      <th>Action</th>
+                      <th>{t.colName}</th>
+                      <th>{t.colStatus}</th>
+                      <th>{t.colActions}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {gaps.map((g) => (
                       <tr key={g.id}>
                         <td>{g.description}</td>
-                        <td><span className="badge badge-unavailable">HIGH SLA BREACH</span></td>
+                        <td><span className="badge badge-unavailable">SLA BREACH</span></td>
                         <td>
                           <button className="btn-gov" style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }} onClick={() => onRunDemoStep(7)}>
-                            Resolve Gap
+                            {t.actionSubmit}
                           </button>
                         </td>
                       </tr>
@@ -406,7 +406,7 @@ export const FacilityViews: React.FC<ViewsProps> = ({
             ) : (
               <div style={{ padding: '1.5rem', textAlign: 'center', color: '#64748b', fontSize: '0.85rem' }}>
                 <CheckCircle2 size={24} color="#166534" style={{ marginBottom: '0.4rem', opacity: 0.8 }} />
-                <p>No active care gaps or SLA breaches detected.</p>
+                <p>{t.noActiveGapsMsg}</p>
               </div>
             )}
           </div>
