@@ -147,6 +147,48 @@ npm run dev
 
 ---
 
+## 📱 Real React Native Mobile App for Field Health Workers (ASHA / CHW)
+
+CareFlow includes a dedicated, standalone **React Native Mobile Application** (`mobile/`) designed specifically for ASHA workers (Accredited Social Health Activists) operating in rural Maharashtra.
+
+### 🌟 Key Mobile Features
+- **Native React Native UI**: Built using native primitives (`View`, `Text`, `TouchableOpacity`, `TextInput`, `ScrollView`, `StyleSheet`).
+- **Offline-First SQLite Persistence**: Field data entry works completely offline with local SQLite DB storage and background auto-sync queue.
+- **Multilingual Support**: Switch seamlessly between Marathi (मराठी), Hindi (हिंदी), and English with 100% native script rendering.
+- **Real-Time Synchronized Journey**: Integrates with the backend REST API (`/api/v1`) to track patient `Meena Devi` (`CF-P1001`) from village registration to hospital care completion.
+
+### 🏃 Running the Mobile App
+
+#### Option A: Interactive Web Simulator (Instant Browser Evaluation)
+1. Open the [CareFlow Live Portal](https://careflow-seven-iota.vercel.app).
+2. Click the **📱 Open ASHA Mobile App (React Native)** button in the upper header navigation.
+3. Test all 12 care journey steps, offline toggle mode, and language switching directly inside the simulator.
+
+#### Option B: Standalone Web Build
+```bash
+cd mobile
+npm install
+npm run dev
+```
+*App will start on `http://localhost:3001`.*
+
+#### Option C: Native Android / Expo Go Execution
+```bash
+cd mobile
+npx expo start
+```
+*Scan the generated QR code using the **Expo Go** app on your Android or iOS device.*
+
+#### Option D: Standalone Android APK Build
+```bash
+cd mobile
+npm run build:apk
+# or: npx eas-cli build -p android --profile preview
+```
+*Generates a standalone native `.apk` file for direct installation on Android phones.*
+
+---
+
 ## 📄 License & Attribution
 
 Developed for public-sector healthcare innovation contexts (Smart India Hackathon / Government Healthcare Digital Transformation initiatives).  
