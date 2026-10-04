@@ -6,6 +6,11 @@
     "orientation": "portrait",
     "icon": "./mobile/assets/icon.png",
     "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./mobile/assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.careflow.mobile"
@@ -14,6 +19,7 @@
       "package": "com.careflow.mobile",
       "versionCode": 1,
       "adaptiveIcon": {
+        "foregroundImage": "./mobile/assets/adaptive-icon.png",
         "backgroundColor": "#0f172a"
       },
       "permissions": [
