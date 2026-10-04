@@ -3,8 +3,13 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      'react-native': 'react-native-web',
+    },
+  },
   server: {
     port: 3001,
-    host: true
-  }
+    host: true,
+  },
 });

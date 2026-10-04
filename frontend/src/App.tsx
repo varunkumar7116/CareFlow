@@ -8,12 +8,15 @@ import { LanguageSelection } from './components/LanguageSelection';
 import { LoginPage } from './components/LoginPage';
 import { LanguageItem, PRIMARY_LANGUAGES, ALL_SCHEDULED_LANGUAGES } from './data/languages';
 
+import { MobileAppModal } from './components/MobileAppModal';
+
 type EntryStep = 'LANGUAGE_SELECTION' | 'LOGIN' | 'DASHBOARD';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isIVROpen, setIsIVROpen] = useState(false);
+  const [isMobileAppOpen, setIsMobileAppOpen] = useState(false);
 
   const savedToken = localStorage.getItem('careflow_token') || '';
   const savedLangCode = localStorage.getItem('careflow_language') || '';
@@ -322,6 +325,7 @@ export function App() {
         userFullName={fullName}
         userRole={userRole}
         onOpenIVR={() => setIsIVROpen(true)}
+        onOpenMobileApp={() => setIsMobileAppOpen(true)}
         onOpenSignIn={() => setIsSignInOpen(true)}
         onSignOut={handleSignOut}
         isAuthenticated={!!authToken}
@@ -367,6 +371,14 @@ export function App() {
       <IVRSimulatorModal
         isOpen={isIVROpen}
         onClose={() => setIsIVROpen(false)}
+      />
+
+      <MobileAppModal
+        isOpen={isMobileAppOpen}
+        onClose={() => setIsMobileAppOpen(false)}
+        currentLanguage={selectedLanguage}
+        demoStep={demoStep}
+        onRunDemoStep={handleRunDemoStep}
       />
     </div>
   );

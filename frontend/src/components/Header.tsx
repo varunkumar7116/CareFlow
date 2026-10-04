@@ -8,6 +8,7 @@ interface HeaderProps {
   userFullName: string;
   userRole: string;
   onOpenIVR: () => void;
+  onOpenMobileApp?: () => void;
   onOpenSignIn: () => void;
   onSignOut: () => void;
   isAuthenticated: boolean;
@@ -20,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   userFullName,
   userRole,
   onOpenIVR,
+  onOpenMobileApp,
   onOpenSignIn,
   onSignOut,
   isAuthenticated,
@@ -59,6 +61,16 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <Languages size={14} color="#38bdf8" />
             <span>{currentLanguage.nameNative} ({currentLanguage.nameEnglish})</span>
+          </button>
+        )}
+
+        {onOpenMobileApp && (
+          <button
+            onClick={onOpenMobileApp}
+            className="btn-gov-secondary"
+            style={{ backgroundColor: '#0284c7', color: 'white', border: '1px solid #38bdf8' }}
+          >
+            <span>📱 ASHA Mobile App</span>
           </button>
         )}
 

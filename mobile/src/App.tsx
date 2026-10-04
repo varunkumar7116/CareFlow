@@ -1,252 +1,223 @@
-import React, { useState } from 'react';
-import {
-  Wifi,
-  WifiOff,
-  UserCheck,
-  ClipboardList,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  Send,
-  PlusCircle,
-  Home,
-  User
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { LanguageSelectionScreen } from './screens/LanguageSelectionScreen';
+import { LoginScreen } from './screens/LoginScreen';
+import { FieldDashboardScreen } from './screens/FieldDashboardScreen';
+import { CareJourneyScreen } from './screens/CareJourneyScreen';
+import { ScreeningFormScreen } from './screens/ScreeningFormScreen';
+import { CareGapTaskScreen } from './screens/CareGapTaskScreen';
+import { FacilityMatcherScreen } from './screens/FacilityMatcherScreen';
+import { FollowUpScreen } from './screens/FollowUpScreen';
+
+import { Patient, CareJourney } from './types/careflow';
+import { syncEngine, SyncEngineStatus } from './services/syncEngine';
+import { sqliteDb } from './services/sqliteDatabase';
+
+type MobileScreen =
+  | 'LANGUAGE_SELECTION'
+  | 'LOGIN'
+  | 'FIELD_DASHBOARD'
+  | 'CARE_JOURNEY'
+  | 'SCREENING_FORM'
+  | 'CARE_GAP_TASK'
+  | 'FACILITY_MATCHER'
+  | 'FOLLOW_UP';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<'tasks' | 'screening' | 'patients'>('tasks');
-  const [isOnline, setIsOnline] = useState(true);
-  const [outboxCount, setOutboxCount] = useState(0);
-  const [taskCompleted, setTaskCompleted] = useState(false);
-  const [screeningSubmitted, setScreeningSubmitted] = useState(false);
+  const [selectedLang, setSelectedLang] = useState<string>('mr');
+  const [currentScreen, setCurrentScreen] = useState<MobileScreen>('LANGUAGE_SELECTION');
+  const [workerName, setWorkerName] = useState<string>('मीरा बाई (आशा - CHW-001)');
+  const [syncStatus, setSyncStatus] = useState<SyncEngineStatus>(syncEngine.getStatus());
 
-  // Form state
-  const [systolic, setSystolic] = useState('140');
-  const [diastolic, setDiastolic] = useState('90');
-  const [riskLevel, setRiskLevel] = useState('HIGH');
+  // Demo single patient state
+  const [patient, setPatient] = useState<Patient>({
+    id: 'PAT-P1001',
+    uhid: 'CF-P1001',
+    firstName: 'Meena',
+    lastName: 'Devi',
+    gender: 'FEMALE',
+    age: 28,
+    phoneNumber: '+919876543210',
+    preferredLanguage: 'hi',
+    village: 'Karamadai Village',
+    chwId: 'USER-CHW-001',
+    channel: 'ASHA / CHW Assisted Entry',
+    provenance: 'SYNTHETIC_DEMO',
+  });
 
-  const handleCompleteTask = () => {
-    setTaskCompleted(true);
-    if (!isOnline) {
-      setOutboxCount((prev) => prev + 1);
+  const [journey, setJourney] = useState<CareJourney>({
+    id: 'CFJ-1001',
+    patientId: 'PAT-P1001',
+    currentStage: 'REGISTRATION',
+    status: 'ACTIVE',
+    assignedChwId: 'USER-CHW-001',
+    facilityId: 'NIN-TN-CBE-001',
+    provenance: 'CAREFLOW_TRANSACTION',
+  });
+
+  const [demoStep, setDemoStep] = useState<number>(1);
+
+  useEffect(() => {
+    const unsubscribe = syncEngine.subscribe(setSyncStatus);
+    return () => unsubscribe();
+  }, []);
+
+  const handleRunDemoStep = (stepNum: number) => {
+    setDemoStep(stepNum);
+    switch (stepNum) {
+      case 1:
+        setJourney((j) => ({ ...j, currentStage: 'REGISTRATION', status: 'ACTIVE' }));
+        break;
+      case 2:
+        setJourney((j) => ({ ...j, currentStage: 'TRIAGE', status: 'ACTIVE' }));
+        break;
+      case 3:
+        setJourney((j) => ({ ...j, currentStage: 'DIAGNOSTICS', status: 'ACTIVE' }));
+        break;
+      case 4:
+        setJourney((j) => ({ ...j, currentStage: 'REFERRAL', status: 'ACTIVE' }));
+        break;
+      case 5:
+        setJourney((j) => ({ ...j, currentStage: 'APPOINTMENT', status: 'ACTIVE' }));
+        break;
+      case 6:
+        setJourney((j) => ({ ...j, currentStage: 'APPOINTMENT', status: 'ACTIVE' }));
+        break;
+      case 7:
+        setJourney((j) => ({ ...j, currentStage: 'APPOINTMENT', status: 'ACTIVE' }));
+        break;
+      case 8:
+        setJourney((j) => ({ ...j, currentStage: 'APPOINTMENT', status: 'ACTIVE' }));
+        break;
+      case 9:
+        setJourney((j) => ({ ...j, currentStage: 'APPOINTMENT', status: 'ACTIVE' }));
+        break;
+      case 10:
+        setJourney((j) => ({ ...j, currentStage: 'HOSPITAL', status: 'ACTIVE' }));
+        break;
+      case 11:
+        setJourney((j) => ({ ...j, currentStage: 'MEDICINE', status: 'ACTIVE' }));
+        break;
+      case 12:
+        setJourney((j) => ({ ...j, currentStage: 'COMPLETED', status: 'COMPLETED' }));
+        break;
     }
   };
 
-  const handleScreeningSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setScreeningSubmitted(true);
-    if (!isOnline) {
-      setOutboxCount((prev) => prev + 1);
-    }
-    setTimeout(() => setScreeningSubmitted(false), 3000);
+  const handleLoginSuccess = (res: any) => {
+    setWorkerName(res.fullName || 'मीरा बाई (आशा - CHW-001)');
+    setCurrentScreen('FIELD_DASHBOARD');
   };
+
+  const handleToggleNetwork = () => {
+    syncEngine.toggleNetworkForTesting(!syncStatus.isOnline);
+  };
+
+  if (currentScreen === 'LANGUAGE_SELECTION') {
+    return (
+      <LanguageSelectionScreen
+        selectedLang={selectedLang}
+        onSelectLang={setSelectedLang}
+        onContinue={() => setCurrentScreen('LOGIN')}
+      />
+    );
+  }
+
+  if (currentScreen === 'LOGIN') {
+    return (
+      <LoginScreen
+        selectedLang={selectedLang}
+        onChangeLang={() => setCurrentScreen('LANGUAGE_SELECTION')}
+        onLoginSuccess={handleLoginSuccess}
+      />
+    );
+  }
+
+  if (currentScreen === 'CARE_JOURNEY') {
+    return (
+      <CareJourneyScreen
+        selectedLang={selectedLang}
+        patient={patient}
+        journey={journey}
+        demoStep={demoStep}
+        onRunDemoStep={handleRunDemoStep}
+        onBack={() => setCurrentScreen('FIELD_DASHBOARD')}
+        onOpenCareGap={() => setCurrentScreen('CARE_GAP_TASK')}
+      />
+    );
+  }
+
+  if (currentScreen === 'SCREENING_FORM') {
+    return (
+      <ScreeningFormScreen
+        selectedLang={selectedLang}
+        patient={patient}
+        onBack={() => setCurrentScreen('FIELD_DASHBOARD')}
+        onSubmitSuccess={() => {
+          handleRunDemoStep(2);
+          setCurrentScreen('CARE_JOURNEY');
+        }}
+      />
+    );
+  }
+
+  if (currentScreen === 'CARE_GAP_TASK') {
+    return (
+      <CareGapTaskScreen
+        selectedLang={selectedLang}
+        patient={patient}
+        journey={journey}
+        demoStep={demoStep}
+        onRunDemoStep={handleRunDemoStep}
+        onBack={() => setCurrentScreen('FIELD_DASHBOARD')}
+        onOpenFacilityMatcher={() => setCurrentScreen('FACILITY_MATCHER')}
+      />
+    );
+  }
+
+  if (currentScreen === 'FACILITY_MATCHER') {
+    return (
+      <FacilityMatcherScreen
+        selectedLang={selectedLang}
+        patient={patient}
+        onBack={() => setCurrentScreen('CARE_GAP_TASK')}
+        onConfirmReroute={() => {
+          handleRunDemoStep(9);
+          setCurrentScreen('CARE_JOURNEY');
+        }}
+      />
+    );
+  }
+
+  if (currentScreen === 'FOLLOW_UP') {
+    return (
+      <FollowUpScreen
+        selectedLang={selectedLang}
+        patient={patient}
+        journey={journey}
+        onBack={() => setCurrentScreen('FIELD_DASHBOARD')}
+        onCompleteCare={() => {
+          handleRunDemoStep(12);
+          setCurrentScreen('CARE_JOURNEY');
+        }}
+      />
+    );
+  }
 
   return (
-    <div className="mobile-container">
-      {/* Mobile Top Header */}
-      <div className="mobile-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <div style={{ width: 32, height: 32, background: 'linear-gradient(135deg, #06b6d4, #3b82f6)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem' }}>
-            CF
-          </div>
-          <div>
-            <h3 style={{ fontSize: '0.95rem', fontWeight: 700, margin: 0 }}>CareFlow CHW</h3>
-            <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Worker: CHW-001 (Village PHC)</span>
-          </div>
-        </div>
-
-        <button
-          onClick={() => setIsOnline(!isOnline)}
-          style={{
-            background: isOnline ? 'rgba(16, 185, 129, 0.2)' : 'rgba(244, 63, 94, 0.2)',
-            border: `1px solid ${isOnline ? '#10b981' : '#f43f5e'}`,
-            color: isOnline ? '#10b981' : '#f43f5e',
-            borderRadius: '20px',
-            padding: '0.3rem 0.6rem',
-            fontSize: '0.7rem',
-            fontWeight: 600,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.3rem',
-            cursor: 'pointer'
-          }}
-        >
-          {isOnline ? <Wifi size={14} /> : <WifiOff size={14} />}
-          {isOnline ? 'Online' : 'Offline'}
-        </button>
-      </div>
-
-      {/* Sync Banner */}
-      <div className="sync-banner" style={{ background: isOnline ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)', color: isOnline ? '#10b981' : '#f59e0b' }}>
-        <span>SQLite Outbox Queue: {outboxCount} Pending</span>
-        <span>{isOnline ? 'Synced to Server' : 'Local Outbox Saved'}</span>
-      </div>
-
-      {/* Body Content */}
-      <div className="mobile-body">
-        {activeTab === 'tasks' && (
-          <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 700 }}>Assigned Care Gap Tasks</h4>
-              <span style={{ fontSize: '0.75rem', color: '#06b6d4', fontWeight: 600 }}>1 Active</span>
-            </div>
-
-            {!taskCompleted ? (
-              <div className="card-mobile" style={{ borderColor: 'rgba(244, 63, 94, 0.4)', background: 'rgba(244, 63, 94, 0.05)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#f43f5e' }}>HIGH PRIORITY</span>
-                  <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Due Today</span>
-                </div>
-                <h5 style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.3rem' }}>
-                  Resolve Overdue Follow-Up
-                </h5>
-                <p style={{ fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.8rem' }}>
-                  Patient: <strong>Meena Devi (CF-P1001)</strong><br />
-                  Task: Conduct maternal home visit check-in and record vitals.
-                </p>
-
-                <button
-                  onClick={handleCompleteTask}
-                  style={{
-                    width: '100%',
-                    background: 'linear-gradient(135deg, #10b981, #059669)',
-                    color: 'white',
-                    border: 'none',
-                    padding: '0.6rem',
-                    borderRadius: '10px',
-                    fontWeight: 700,
-                    fontSize: '0.85rem',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.4rem'
-                  }}
-                >
-                  <CheckCircle size={16} /> Mark Visit Completed
-                </button>
-              </div>
-            ) : (
-              <div className="card-mobile" style={{ background: 'rgba(16, 185, 129, 0.1)', borderColor: '#10b981', textAlign: 'center', padding: '1.5rem' }}>
-                <CheckCircle size={32} color="#10b981" style={{ margin: '0 auto 0.5rem auto' }} />
-                <h5 style={{ fontWeight: 700, color: '#10b981' }}>Task Completed!</h5>
-                <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.2rem' }}>
-                  {isOnline ? 'Synced instantly with CareFlow Server.' : 'Queued in client SQLite Outbox.'}
-                </p>
-              </div>
-            )}
-          </>
-        )}
-
-        {activeTab === 'screening' && (
-          <>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: 700 }}>Field Maternal Health Screening</h4>
-
-            {screeningSubmitted && (
-              <div style={{ background: 'rgba(16, 185, 129, 0.2)', border: '1px solid #10b981', color: '#10b981', padding: '0.6rem', borderRadius: '10px', fontSize: '0.8rem', textAlign: 'center', fontWeight: 600 }}>
-                ✓ Screening Record Saved!
-              </div>
-            )}
-
-            <form onSubmit={handleScreeningSubmit} className="card-mobile" style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-              <div>
-                <label style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Patient UHID</label>
-                <input
-                  type="text"
-                  value="CF-P1001 (Meena Devi)"
-                  disabled
-                  style={{ width: '100%', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', padding: '0.5rem', color: '#f8fafc', fontSize: '0.85rem' }}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                <div>
-                  <label style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Systolic BP</label>
-                  <input
-                    type="number"
-                    value={systolic}
-                    onChange={(e) => setSystolic(e.target.value)}
-                    style={{ width: '100%', background: '#0f172a', border: '1px solid #334155', borderRadius: '8px', padding: '0.5rem', color: '#f8fafc' }}
-                  />
-                </div>
-                <div>
-                  <label style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Diastolic BP</label>
-                  <input
-                    type="number"
-                    value={diastolic}
-                    onChange={(e) => setDiastolic(e.target.value)}
-                    style={{ width: '100%', background: '#0f172a', border: '1px solid #334155', borderRadius: '8px', padding: '0.5rem', color: '#f8fafc' }}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Care Gap Risk Assessment</label>
-                <select
-                  value={riskLevel}
-                  onChange={(e) => setRiskLevel(e.target.value)}
-                  style={{ width: '100%', background: '#0f172a', border: '1px solid #334155', borderRadius: '8px', padding: '0.5rem', color: '#f8fafc' }}
-                >
-                  <option value="LOW">Low Risk (Routine)</option>
-                  <option value="MEDIUM">Moderate Risk</option>
-                  <option value="HIGH">High Risk (Referral Required)</option>
-                </select>
-              </div>
-
-              <button
-                type="submit"
-                style={{
-                  width: '100%',
-                  background: 'linear-gradient(135deg, #06b6d4, #3b82f6)',
-                  color: 'white',
-                  border: 'none',
-                  padding: '0.65rem',
-                  borderRadius: '10px',
-                  fontWeight: 700,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  marginTop: '0.4rem'
-                }}
-              >
-                Submit Screening Record
-              </button>
-            </form>
-          </>
-        )}
-
-        {activeTab === 'patients' && (
-          <>
-            <h4 style={{ fontSize: '0.9rem', fontWeight: 700 }}>Village PHC Patient Directory</h4>
-            <div className="card-mobile" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Meena Devi</div>
-                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>CF-P1001 • Age 28</div>
-                <div style={{ fontSize: '0.7rem', color: '#06b6d4', marginTop: '0.2rem' }}>Stage: SCREENING / REFERRAL</div>
-              </div>
-              <span style={{ fontSize: '0.7rem', background: 'rgba(244, 63, 94, 0.2)', color: '#f43f5e', padding: '0.25rem 0.5rem', borderRadius: '6px', fontWeight: 700 }}>
-                High Risk
-              </span>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Bottom Navigation */}
-      <div className="mobile-nav">
-        <div className={`nav-item ${activeTab === 'tasks' ? 'active' : ''}`} onClick={() => setActiveTab('tasks')}>
-          <ClipboardList size={20} />
-          <span>My Tasks</span>
-        </div>
-        <div className={`nav-item ${activeTab === 'screening' ? 'active' : ''}`} onClick={() => setActiveTab('screening')}>
-          <PlusCircle size={20} />
-          <span>Screening</span>
-        </div>
-        <div className={`nav-item ${activeTab === 'patients' ? 'active' : ''}`} onClick={() => setActiveTab('patients')}>
-          <User size={20} />
-          <span>Patients</span>
-        </div>
-      </div>
-    </div>
+    <FieldDashboardScreen
+      selectedLang={selectedLang}
+      workerName={workerName}
+      syncStatus={syncStatus}
+      onToggleNetwork={handleToggleNetwork}
+      patient={patient}
+      journey={journey}
+      demoStep={demoStep}
+      onRunDemoStep={handleRunDemoStep}
+      onOpenJourney={() => setCurrentScreen('CARE_JOURNEY')}
+      onOpenScreening={() => setCurrentScreen('SCREENING_FORM')}
+      onOpenCareGap={() => setCurrentScreen('CARE_GAP_TASK')}
+      onSignOut={() => setCurrentScreen('LOGIN')}
+    />
   );
 }
 
