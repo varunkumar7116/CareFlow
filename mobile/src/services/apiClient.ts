@@ -1,6 +1,15 @@
 // CareFlow Mobile Application - REST API Client & Backend Connection Service
 
-const API_BASE = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:8085/api/v1';
+const getApiBase = (): string => {
+  try {
+    if (typeof process !== 'undefined' && process.env && process.env.VITE_API_BASE_URL) {
+      return process.env.VITE_API_BASE_URL;
+    }
+  } catch (e) {}
+  return 'http://localhost:8085/api/v1';
+};
+
+const API_BASE = getApiBase();
 
 export interface LoginResult {
   success: boolean;
@@ -12,6 +21,32 @@ export interface LoginResult {
   error?: string;
 }
 
+// Safe storage wrapper for React Native / Web compatibility
+const safeStorage = {
+  getItem: (key: string): string | null => {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        return localStorage.getItem(key);
+      }
+    } catch (e) {}
+    return null;
+  },
+  setItem: (key: string, value: string): void => {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(key, value);
+      }
+    } catch (e) {}
+  },
+  removeItem: (key: string): void => {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem(key);
+      }
+    } catch (e) {}
+  },
+};
+
 // Demo Accounts Mapping for offline and zero-friction field worker testing
 const DEMO_ACCOUNTS: Record<string, { pass: string; role: string; name: string; fac: string }> = {
   'MH-PHC-ADMIN': { pass: 'CareFlow@123', role: 'FACILITY_ADMIN', name: 'MH Facility Administrator', fac: 'NIN-TN-CBE-001' },
@@ -22,15 +57,15 @@ const DEMO_ACCOUNTS: Record<string, { pass: string; role: string; name: string; 
 };
 
 class ApiClientService {
-  private token: string = localStorage.getItem('careflow_mobile_token') || '';
+  private token: string = safeStorage.getItem('careflow_mobile_token') || '';
 
   public setToken(token: string) {
     this.token = token;
-    localStorage.setItem('careflow_mobile_token', token);
+    safeStorage.setItem('careflow_mobile_token', token);
   }
 
   public getToken(): string {
-    return this.token || localStorage.getItem('careflow_mobile_token') || '';
+    return this.token || safeStorage.getItem('careflow_mobile_token') || '';
   }
 
   public async login(user: string, pass: string): Promise<LoginResult> {
@@ -91,7 +126,7 @@ class ApiClientService {
 
   public logout() {
     this.token = '';
-    localStorage.removeItem('careflow_mobile_token');
+    safeStorage.removeItem('careflow_mobile_token');
   }
 }
 
