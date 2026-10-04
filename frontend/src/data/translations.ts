@@ -138,7 +138,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 1. MARATHI (मराठी)
   mr: {
     portalTitle: 'केअर फ्लो',
-    portalSubtitle: 'आरोग्य सुविधा आणि काळजी समन्वय पोर्टल — महाराष्ट्र प्रोटोटाइप',
+    portalSubtitle: 'आरोग्य सुविधा आणि काळजी समन्वय पोर्टल',
     govTag: 'शासकीय आरोग्य सेवा समन्वय',
     guestMode: 'अतिथी कार्य पद्धती',
     ivrSimulator: 'IVR फोन सिम्युलेटर',
@@ -251,7 +251,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 2. HINDI (हिंदी)
   hi: {
     portalTitle: 'केयर फ्लो',
-    portalSubtitle: 'स्वास्थ्य सुविधा और देखभाल समन्वय पोर्टल — महाराष्ट्र प्रारूप',
+    portalSubtitle: 'स्वास्थ्य सुविधा और देखभाल समन्वय पोर्टल',
     govTag: 'सरकारी स्वास्थ्य सेवा समन्वय',
     guestMode: 'अतिथि संचालन मोड',
     ivrSimulator: 'IVR फोन सिम्युलेटर',
@@ -364,7 +364,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 3. ENGLISH (en)
   en: {
     portalTitle: 'CARE FLOW',
-    portalSubtitle: 'Healthcare Facility & Care Coordination Portal — Maharashtra Prototype',
+    portalSubtitle: 'Healthcare Facility & Care Coordination Portal',
     govTag: 'Government Healthcare Service Coordination',
     guestMode: 'Guest Operational Mode',
     ivrSimulator: 'IVR Phone Simulator',
@@ -477,7 +477,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 4. GUJARATI (ગુજરાતી)
   gu: {
     portalTitle: 'કેર ફ્લો',
-    portalSubtitle: 'આરોગ્ય સુવિધા અને સંભાળ સંકલન પોર્ટલ — મહારાષ્ટ્ર પ્રોટોટાઇપ',
+    portalSubtitle: 'આરોગ્ય સુવિધા અને સંભાળ સંકલન પોર્ટલ',
     govTag: 'સરકારી આરોગ્ય સેવા સંકલન',
     guestMode: 'અતિથિ સંચાલન સ્થિતિ',
     ivrSimulator: 'IVR ફોન સિમ્યુલેટર',
@@ -590,7 +590,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 5. TAMIL (தமிழ்)
   ta: {
     portalTitle: 'கேர் ஃப்ளோ',
-    portalSubtitle: 'சுகாதார வசதி மற்றும் பராமரிப்பு ஒருங்கிணைப்பு போர்ட்டல் — மகாராஷ்டிரா',
+    portalSubtitle: 'சுகாதார வசதி மற்றும் பராமரிப்பு ஒருங்கிணைப்பு போர்ட்டல்',
     govTag: 'அரசு சுகாதார சேவை ஒருங்கிணைப்பு',
     guestMode: 'விருந்தினர் பயன்முறை',
     ivrSimulator: 'IVR தொலைபேசி சிமுலேட்டர்',
@@ -703,7 +703,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 6. TELUGU (తెలుగు)
   te: {
     portalTitle: 'కేర్ ఫ్లో',
-    portalSubtitle: 'ఆరోగ్య సదుపాయం మరియు సంరక్షణ సమన్వయ పోర్టల్ — మహారాష్ట్ర',
+    portalSubtitle: 'ఆరోగ్య సదుపాయం మరియు సంరక్షణ సమన్వయ పోర్టల్',
     govTag: 'ప్రభుత్వ ఆరోగ్య సేవల సమన్వయం',
     guestMode: 'గెస్ట్ మోడ్',
     ivrSimulator: 'IVR ఫోన్ సిమ్యులేటర్',
@@ -816,7 +816,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 7. BENGALI (বাংলা)
   bn: {
     portalTitle: 'কেয়ার ফ্লো',
-    portalSubtitle: 'স্বাস্থ্য পরিষেবা ও যত্ন সমন্বয় পোর্টাল — মহারাষ্ট্র প্রোটোটাইপ',
+    portalSubtitle: 'স্বাস্থ্য পরিষেবা ও যত্ন সমন্বয় পোর্টাল',
     govTag: 'সরকারি স্বাস্থ্য পরিষেবা সমন্বয়',
     guestMode: 'গেস্ট মোড',
     ivrSimulator: 'IVR ফোন সিমুলেটর',
@@ -929,7 +929,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 8. KANNADA (ಕನ್ನಡ)
   kn: {
     portalTitle: 'ಕೇರ್ ಫ್ಲೋ',
-    portalSubtitle: 'ಆರೋಗ್ಯ ಸೌಲಭ್ಯ ಮತ್ತು ಆರೈಕೆ ಸಂಯೋಜನೆ ಪೋರ್ಟಲ್ — ಮಹಾರಾಷ್ಟ್ರ',
+    portalSubtitle: 'ಆರೋಗ್ಯ ಸೌಲಭ್ಯ ಮತ್ತು ಆರೈಕೆ ಸಂಯೋಜನೆ ಪೋರ್ಟಲ್',
     govTag: 'ಸರ್ಕಾರಿ ಆರೋಗ್ಯ ಸೇವೆಗಳ ಸಂಯೋಜನೆ',
     guestMode: 'ಅತಿಥಿ ಮೋಡ್',
     ivrSimulator: 'IVR ಫೋನ್ ಸಿಮ್ಯುಲೇಟರ್',
@@ -1042,7 +1042,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 9. MALAYALAM (മലയാളം)
   ml: {
     portalTitle: 'കെയർ ഫ്ലോ',
-    portalSubtitle: 'ആരോഗ്യ കേന്ദ്രവും പരിചരണ കോർഡിനേഷൻ പോർട്ടലും — മഹാരാഷ്ട്ര',
+    portalSubtitle: 'ആരോഗ്യ കേന്ദ്രവും പരിചരണ കോർഡിനേഷൻ പോർട്ടലും',
     govTag: 'സർക്കാർ ആരോഗ്യ സേവന കോർഡിനേഷൻ',
     guestMode: 'ഗസ്റ്റ് മോഡ്',
     ivrSimulator: 'IVR ഫോൺ സിമുലേറ്റർ',
@@ -1155,7 +1155,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 10. PUNJABI (ਪੰਜਾਬੀ)
   pa: {
     portalTitle: 'ਕੇਅਰ ਫਲੋ',
-    portalSubtitle: 'ਸਿਹਤ ਸੰਭਾਲ ਸੁਵਿਧਾ ਅਤੇ ਕੇਅਰ ਤਾਲਮੇਲ ਪੋਰਟਲ — ਮਹਾਰਾਸ਼ਟਰ',
+    portalSubtitle: 'ਸਿਹਤ ਸੰਭਾਲ ਸੁਵਿਧਾ ਅਤੇ ਕੇਅਰ ਤਾਲਮੇਲ ਪੋਰਟਲ',
     govTag: 'ਸਰਕਾਰੀ ਸਿਹਤ ਸੇਵਾ ਤਾਲਮੇਲ',
     guestMode: 'ਗੇਸਟ ਮੋਡ',
     ivrSimulator: 'IVR ਫੋਨ ਸਿਮੂਲੇਟਰ',
@@ -1268,7 +1268,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 11. ODIA (ଓଡ଼ିଆ)
   or: {
     portalTitle: 'କେୟାର ଫ୍ଲୋ',
-    portalSubtitle: 'ସ୍ୱାସ୍ଥ୍ୟସେବା ସୁବିଧା ଓ ଯତ୍ନ ସମନ୍ୱୟ ପୋର୍ଟାଲ — ମହାରାଷ୍ଟ୍ର',
+    portalSubtitle: 'ସ୍ୱାସ୍ଥ୍ୟସେବା ସୁବିଧା ଓ ଯତ୍ନ ସମନ୍ୱୟ ପୋର୍ଟାଲ',
     govTag: 'ସରକାରୀ ସ୍ୱାସ୍ଥ୍ୟସେବା ସମନ୍ୱୟ',
     guestMode: 'ଅତିଥି ମୋଡ୍',
     ivrSimulator: 'IVR ଫୋନ୍ ସିମୁଲେଟର',
@@ -1381,7 +1381,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 12. URDU (اردو)
   ur: {
     portalTitle: 'کیئر فلو',
-    portalSubtitle: 'صحت کی سہولت اور دیکھ بھال کا کوآرڈینیشن پورٹل — مہاراشٹرا',
+    portalSubtitle: 'صحت کی سہولت اور دیکھ بھال کا کوآرڈینیشن پورٹل',
     govTag: 'سرمایہ کاری اور سرکاری صحت کی خدمات',
     guestMode: 'مہمان موڈ',
     ivrSimulator: 'IVR فون سمیلیٹر',
@@ -1494,7 +1494,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 13. ASSAMESE (অসমীয়া)
   as: {
     portalTitle: 'কেয়াৰ ফ্লো',
-    portalSubtitle: 'স্বাস্থ্য সেৱা আৰু যত্ন সমন্বয় প’ৰ্টেল — মহাৰাষ্ট্ৰ',
+    portalSubtitle: 'স্বাস্থ্য সেৱা আৰু যত্ন সমন্বয় প’ৰ্টেল',
     govTag: 'চৰকাৰী স্বাস্থ্য সেৱা সমন্বয়',
     guestMode: 'অতিথি মোড',
     ivrSimulator: 'IVR ফোন ছিমিউলেটৰ',
@@ -1607,7 +1607,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 14. SANSKRIT (संस्कृतम्)
   sa: {
     portalTitle: 'केयर् फ्लो',
-    portalSubtitle: 'स्वास्थ्यसेवा सुविधानुकूलन तथा रक्षासंयोजनं - महाराष्ट्र प्रारूपम्',
+    portalSubtitle: 'स्वास्थ्यसेवा सुविधानुकूलन तथा रक्षासंयोजनम्',
     govTag: 'सर्वकारीय स्वास्थ्यसेवा संयोजनम्',
     guestMode: 'अतिथि सञ्चालन प्रकारः',
     ivrSimulator: 'IVR दूरवाणी यन्त्रम्',
@@ -1624,7 +1624,7 @@ export const translations: Record<string, TranslationDictionary> = {
     continueBtn: 'अग्रे सरतु',
     noLangFound: 'कापि भाषा न प्राप्ता',
     loginHeaderTitle: 'केयर् फ्लो',
-    loginHeaderDesc: 'स्वास्थ्यसेवा सुविधानुकूलन तथा रक्षासंयोजनं',
+    loginHeaderDesc: 'स्वास्थ्यसेवा सुविधानुकूलन तथा रक्षासंयोजनम्',
     facilityUserIdLabel: 'सुविधा सङ्केतः / प्रयोक्ता सङ्केतः',
     passwordLabel: 'गुप्तशब्दः',
     signInBtn: 'प्रवेशं करोतु',
@@ -1720,7 +1720,7 @@ export const translations: Record<string, TranslationDictionary> = {
   // 15. NEPALI (नेपाली)
   ne: {
     portalTitle: 'केयर फ्लो',
-    portalSubtitle: 'स्वास्थ्य सुविधा र हेरचाह समन्वय पोर्टल — महाराष्ट्र',
+    portalSubtitle: 'स्वास्थ्य सुविधा र हेरचाह समन्वय पोर्टल',
     govTag: 'सरकारी स्वास्थ्य सेवा समन्वय',
     guestMode: 'अतिथि मोड',
     ivrSimulator: 'IVR फोन सिम्युलेटर',
@@ -1838,6 +1838,6 @@ export function getTranslation(langCode: string): TranslationDictionary {
   if (translations[langCode]) {
     return translations[langCode];
   }
-  // Try Hindi/Marathi fallback or Default English
-  return translations['hi'] || translations['mr'] || translations['en'];
+  // Try Marathi / Hindi fallback or Default English
+  return translations['mr'] || translations['hi'] || translations['en'];
 }

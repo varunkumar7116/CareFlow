@@ -118,7 +118,7 @@ public class DataInitializer implements CommandLineRunner {
         seedUser("USER-SUP-001", "supervisor1", "password", "Dr. V. Sundaram (District Supervisor)", Role.DISTRICT_SUPERVISOR, "+919876543203", "en", null);
         seedUser("USER-SYS-001", "sysadmin", "password", "System Administrator", Role.SYSTEM_ADMIN, "+919876543204", "en", null);
 
-        // Seed Maharashtra Prototype Demo Credentials
+        // Seed Demo Access Credentials
         seedUser("USER-MH-ADMIN-001", "MH-PHC-ADMIN", "CareFlow@123", "MH Facility Administrator", Role.FACILITY_ADMIN, "+919876543220", "mr", "NIN-TN-CBE-001");
         seedUser("USER-MH-DOC-001", "MH-DOCTOR-001", "CareFlow@123", "Dr. Anand Joshi", Role.DOCTOR, "+919876543221", "mr", "NIN-TN-CBE-001");
         seedUser("USER-MH-STAFF-001", "MH-STAFF-001", "CareFlow@123", "Sowmya R (Facility Staff)", Role.FACILITY_STAFF, "+919876543222", "mr", "NIN-TN-CBE-001");
