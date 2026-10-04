@@ -33,13 +33,14 @@ export function App() {
 
   const [facilityDetails, setFacilityDetails] = useState<any>(null);
   const [dashboardSummary, setDashboardSummary] = useState<any>(null);
-  const [patient, setPatient] = useState<any>({ id: 'PAT-P1001', uhid: 'CF-P1001', firstName: 'Meena', lastName: 'Devi' });
-  const [journey, setJourney] = useState<any>({ id: 'CJ-P1001-01', currentStage: 'SCREENING', status: 'ACTIVE' });
+  const [patient, setPatient] = useState<any>({ id: 'PAT-P1001', uhid: 'CF-P1001', firstName: 'Meena', lastName: 'Devi', gender: 'FEMALE', age: 28, channel: 'ASHA / CHW' });
+  const [journey, setJourney] = useState<any>({ id: 'CFJ-1001', currentStage: 'REGISTRATION', status: 'ACTIVE', assignedChwId: 'USER-CHW-001', facilityId: 'NIN-TN-CBE-001' });
   const [referral, setReferral] = useState<any>(null);
   const [gaps, setGaps] = useState<any[]>([]);
   const [tasks, setTasks] = useState<any[]>([]);
+  const [matchedFacility, setMatchedFacility] = useState<any>(null);
   const [demoStep, setDemoStep] = useState<number>(1);
-  const [statusMessage, setStatusMessage] = useState('CareFlow Operational Facility Portal initialized with seed scenario for Meena (CF-P1001).');
+  const [statusMessage, setStatusMessage] = useState('Step 1: Patient Meena Devi (CF-P1001) registered via ASHA/CHW assisted entry. Care Journey CFJ-1001 initialized.');
 
   const API_BASE = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:8085/api/v1';
 
@@ -147,18 +148,6 @@ export function App() {
         const sumData = await sumRes.json();
         setDashboardSummary(sumData);
       }
-
-      const cgRes = await authFetch(`${API_BASE}/caregaps/open`);
-      if (cgRes.ok) {
-        const cgData = await cgRes.json();
-        setGaps(cgData);
-      }
-
-      const tRes = await authFetch(`${API_BASE}/tasks`);
-      if (tRes.ok) {
-        const tData = await tRes.json();
-        setTasks(tData);
-      }
     } catch (err) {
       // Backend fetch fallback
     }
@@ -179,41 +168,113 @@ export function App() {
     setDemoStep(stepNum);
     switch (stepNum) {
       case 1:
-        setStatusMessage('Step 1: Patient Meena (CF-P1001) registered at Government PHC, Karamadai.');
-        setJourney((j: any) => ({ ...j, currentStage: 'REGISTRATION' }));
-        break;
-      case 2:
-        setStatusMessage('Step 2: Field screening completed. High risk flagged (BP 140/90 mmHg).');
-        setJourney((j: any) => ({ ...j, currentStage: 'SCREENING' }));
-        break;
-      case 3:
-        setStatusMessage('Step 3: Referral created from Karamadai PHC to District Hospital Rampur Obstetrics.');
-        setJourney((j: any) => ({ ...j, currentStage: 'REFERRAL' }));
-        setReferral({ id: 'REF-001', targetFacilityId: facilityId, specialtyRequired: 'Obstetrics', status: 'SENT' });
-        break;
-      case 4:
-        setStatusMessage('Step 4: Appointment booked at District Hospital with Dr. Rajesh Kumar.');
-        setJourney((j: any) => ({ ...j, currentStage: 'APPOINTMENT' }));
-        if (referral) setReferral({ ...referral, status: 'ACCEPTED' });
-        break;
-      case 5:
-        setStatusMessage('Step 5: Simulating 24h SLA Breach — Patient missed follow-up.');
-        setJourney((j: any) => ({ ...j, currentStage: 'FOLLOW_UP' }));
-        setGaps([{ id: 'GAP-001', description: 'Overdue Follow-up Visit (24h SLA Breach)', status: 'OPEN' }]);
-        setTasks([{ id: 'TASK-001', title: 'CHW Callback: Conduct home visit for Meena Devi', status: 'OPEN' }]);
-        break;
-      case 6:
-        setStatusMessage('Step 6: Automated Care Gap generated & task dispatched to CHW Meera Bai.');
-        break;
-      case 7:
-        setStatusMessage('Step 7: CHW recorded home visit. Patient attended clinic.');
+        setStatusMessage('Step 1: Patient Meena Devi (CF-P1001) registered via ASHA/CHW assisted entry. Care Journey CFJ-1001 initialized.');
+        setJourney((j: any) => ({ ...j, currentStage: 'REGISTRATION', status: 'ACTIVE' }));
+        setReferral(null);
         setGaps([]);
         setTasks([]);
-        setJourney((j: any) => ({ ...j, currentStage: 'MEDICINE' }));
+        setMatchedFacility(null);
+        break;
+      case 2:
+        setStatusMessage('Step 2: Field screening & Clinical Triage completed. High-risk maternal pregnancy flagged (BP: 160/100 mmHg, Priority: HIGH).');
+        setJourney((j: any) => ({ ...j, currentStage: 'TRIAGE', status: 'ACTIVE' }));
+        break;
+      case 3:
+        setStatusMessage('Step 3: Consultation completed. Obstetric ultrasound scan & lab diagnostics ordered.');
+        setJourney((j: any) => ({ ...j, currentStage: 'DIAGNOSTICS', status: 'ACTIVE' }));
+        break;
+      case 4:
+        setStatusMessage('Step 4: Referral REF-CFJ-1001 created from Government PHC Karamadai to District Hospital A (Obstetrics & Ultrasound).');
+        setJourney((j: any) => ({ ...j, currentStage: 'REFERRAL', status: 'ACTIVE' }));
+        setReferral({
+          id: 'REF-CFJ-1001',
+          referringFacilityName: 'Government PHC Karamadai',
+          targetFacilityId: 'FAC-DISTRICT-HOSPITAL-A',
+          targetFacilityName: 'District Hospital A (Coimbatore)',
+          specialtyRequired: 'Obstetrics',
+          capabilityRequired: 'Ultrasound',
+          priority: 'HIGH',
+          status: 'SENT'
+        });
+        break;
+      case 5:
+        setStatusMessage('Step 5: District Hospital A accepted referral. Awaiting specialist appointment slot confirmation.');
+        setJourney((j: any) => ({ ...j, currentStage: 'APPOINTMENT', status: 'ACTIVE' }));
+        if (referral) {
+          setReferral((r: any) => ({ ...r, status: 'ACCEPTED' }));
+        }
+        break;
+      case 6:
+        setStatusMessage('Step 6 (Controlled Failure): Specialist appointment confirmation exceeded 24h SLA at District Hospital A!');
+        setJourney((j: any) => ({ ...j, currentStage: 'APPOINTMENT', status: 'ACTIVE' }));
+        if (referral) {
+          setReferral((r: any) => ({ ...r, status: 'ACCEPTED', appointmentStatus: 'DELAYED' }));
+        }
+        break;
+      case 7:
+        setStatusMessage('Step 7: Automated Care Gap Engine triggered ⚠ CARE GAP DETECTED. Action Task TSK-CFJ-1001 dispatched to CHW Meera Bai.');
+        setGaps([{
+          id: 'GAP-CFJ-1001',
+          patientId: 'PAT-P1001',
+          journeyId: 'CFJ-1001',
+          gapType: 'UNCONFIRMED_REFERRAL',
+          description: 'Referral accepted by District Hospital A, but specialist appointment confirmation exceeded 24h SLA.',
+          priority: 'HIGH',
+          status: 'OPEN'
+        }]);
+        setTasks([{
+          id: 'TSK-CFJ-1001',
+          careGapId: 'GAP-CFJ-1001',
+          title: 'Follow up on delayed specialist appointment for Meena Devi',
+          assignedUser: 'CHW-001 (Meera Bai)',
+          priority: 'HIGH',
+          status: 'OPEN',
+          actionText: 'Reroute to available matching facility'
+        }]);
         break;
       case 8:
-        setStatusMessage('Step 8: Closed-Loop Care completed successfully! Patient treatment recorded.');
+        setStatusMessage('Step 8: Operational Escalation initiated. Rerouting matcher identified District Hospital B (Matches Obstetrics & Ultrasound requirements).');
+        setMatchedFacility({
+          id: 'FAC-DISTRICT-HOSPITAL-B',
+          name: 'District Hospital B (Rampur)',
+          district: 'Rampur',
+          specialtyAvailable: 'Obstetrics',
+          equipmentAvailable: 'Ultrasound Scanner (Mindray DC-40)',
+          status: 'MATCHED'
+        });
+        break;
+      case 9:
+        setStatusMessage('Step 9 (Recovery): District Hospital B accepted referral & confirmed appointment! Care Gap resolved.');
+        setReferral({
+          id: 'REF-CFJ-1001-REROUTED',
+          referringFacilityName: 'Government PHC Karamadai',
+          targetFacilityId: 'FAC-DISTRICT-HOSPITAL-B',
+          targetFacilityName: 'District Hospital B (Rampur)',
+          specialtyRequired: 'Obstetrics',
+          capabilityRequired: 'Ultrasound Scanner',
+          priority: 'HIGH',
+          status: 'ACCEPTED',
+          doctorName: 'Dr. Rajesh Kumar',
+          appointmentTime: 'Today 11:30 AM'
+        });
+        setGaps([]);
+        setTasks([]);
+        setMatchedFacility(null);
+        setJourney((j: any) => ({ ...j, currentStage: 'APPOINTMENT', status: 'ACTIVE' }));
+        break;
+      case 10:
+        setStatusMessage('Step 10: 108 Ambulance / CHW Escort transport complete. Patient Meena Devi arrived at District Hospital B.');
+        setJourney((j: any) => ({ ...j, currentStage: 'HOSPITAL', status: 'ACTIVE' }));
+        break;
+      case 11:
+        setStatusMessage('Step 11: Specialist obstetric treatment completed. Prenatal & antihypertensive medicine dispensed.');
+        setJourney((j: any) => ({ ...j, currentStage: 'MEDICINE', status: 'ACTIVE' }));
+        break;
+      case 12:
+        setStatusMessage('Step 12: Closed-Loop Follow-Up completed! ✅ CARE JOURNEY CFJ-1001 SAFELY CLOSED.');
         setJourney((j: any) => ({ ...j, currentStage: 'COMPLETED', status: 'COMPLETED' }));
+        setGaps([]);
+        setTasks([]);
         break;
     }
   };

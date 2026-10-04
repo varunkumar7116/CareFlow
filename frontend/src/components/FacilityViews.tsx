@@ -262,6 +262,200 @@ export const FacilityViews: React.FC<ViewsProps> = ({
     </div>
   );
 
+  // STAGE ORDER DEFINITION (13 Stages)
+  const STAGE_CONFIG: { stage: string; label: string; humanTerm: string }[] = [
+    { stage: 'REGISTRATION', label: '1. Registration', humanTerm: 'Patient Enters' },
+    { stage: 'SCREENING', label: '2. Screening', humanTerm: 'Field Screening' },
+    { stage: 'TRIAGE', label: '3. Triage', humanTerm: 'Clinical Triage' },
+    { stage: 'CONSULTATION', label: '4. Consultation', humanTerm: 'Primary Consult' },
+    { stage: 'DIAGNOSTICS', label: '5. Diagnostics', humanTerm: 'Lab & Scan' },
+    { stage: 'REFERRAL', label: '6. Referral', humanTerm: 'Inter-Facility Referral' },
+    { stage: 'APPOINTMENT', label: '7. Appointment', humanTerm: 'Specialist Slot' },
+    { stage: 'TRANSPORT', label: '8. Transport', humanTerm: 'Ambulance / Escort' },
+    { stage: 'HOSPITAL', label: '9. Arrival', humanTerm: 'Hospital Arrival' },
+    { stage: 'TREATMENT', label: '10. Treatment', humanTerm: 'Specialist Care' },
+    { stage: 'MEDICINE', label: '11. Medicine', humanTerm: 'Pharmacy Dispensed' },
+    { stage: 'FOLLOW_UP', label: '12. Follow-Up', humanTerm: 'CHW Home Visit' },
+    { stage: 'COMPLETED', label: '13. Care Closed', humanTerm: 'Journey Closed' },
+  ];
+
+  const currentStageName = journey?.currentStage || 'REGISTRATION';
+  const currentStageIndex = STAGE_CONFIG.findIndex(s => s.stage === currentStageName);
+
+  // Render 13-Stage Timeline Bar
+  const renderCareTimeline = () => (
+    <div className="gov-card" style={{ marginBottom: '1.25rem', borderLeft: '4px solid #0284c7' }}>
+      <div className="gov-card-header" style={{ marginBottom: '0.75rem' }}>
+        <div className="gov-card-title">
+          <GitCommit size={18} color="#0284c7" />
+          <span>Care Journey Timeline — CFJ-1001 (Patient: Meena Devi)</span>
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <span className="provenance-tag" style={{ backgroundColor: '#e0f2fe', color: '#0369a1' }}>CAREFLOW_TRANSACTION</span>
+          <span className="provenance-tag" style={{ backgroundColor: '#fef3c7', color: '#92400e' }}>SYNTHETIC_DEMO</span>
+        </div>
+      </div>
+
+      {/* Patient Meta Banner */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '4px', border: '1px solid #e2e8f0', marginBottom: '1rem', fontSize: '0.8rem' }}>
+        <div><strong>Patient Name:</strong> Meena Devi (CF-P1001)</div>
+        <div><strong>Journey ID:</strong> CFJ-1001</div>
+        <div>
+          <strong>Access Channel:</strong> <span className="badge badge-available">ASHA / CHW Assisted Entry</span>
+          <span style={{ fontSize: '0.7rem', color: '#64748b', marginLeft: '0.4rem' }}>(Supports IVR, Mobile App, CHW)</span>
+        </div>
+        <div><strong>Status:</strong> <span className={`badge ${journey?.status === 'COMPLETED' ? 'badge-available' : demoStep === 6 || demoStep === 7 ? 'badge-unavailable' : 'badge-limited'}`}>{journey?.status || 'ACTIVE'}</span></div>
+      </div>
+
+      {/* 13 Stage Visual Timeline Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(105px, 1fr))', gap: '0.4rem' }}>
+        {STAGE_CONFIG.map((item, idx) => {
+          const isCompleted = idx < currentStageIndex || journey?.status === 'COMPLETED';
+          const isCurrent = idx === currentStageIndex && journey?.status !== 'COMPLETED';
+          const isException = (demoStep === 6 || demoStep === 7) && item.stage === 'APPOINTMENT';
+          const isEscalated = demoStep === 8 && item.stage === 'APPOINTMENT';
+
+          let bgColor = '#ffffff';
+          let borderColor = '#cbd5e1';
+          let textColor = '#475569';
+          let statusSymbol = '○';
+
+          if (isException) {
+            bgColor = '#fef2f2';
+            borderColor = '#ef4444';
+            textColor = '#991b1b';
+            statusSymbol = '⚠ EXCEPTION';
+          } else if (isEscalated) {
+            bgColor = '#fffbebe';
+            borderColor = '#f59e0b';
+            textColor = '#b45309';
+            statusSymbol = '↗ REROUTED';
+          } else if (isCompleted) {
+            bgColor = '#f0fdf4';
+            borderColor = '#86efac';
+            textColor = '#166534';
+            statusSymbol = '✓ Done';
+          } else if (isCurrent) {
+            bgColor = '#eff6ff';
+            borderColor = '#3b82f6';
+            textColor = '#1d4ed8';
+            statusSymbol = '● Current';
+          }
+
+          return (
+            <div
+              key={item.stage}
+              style={{
+                backgroundColor: bgColor,
+                border: `1px solid ${borderColor}`,
+                padding: '0.5rem 0.4rem',
+                borderRadius: '4px',
+                textAlign: 'center',
+                boxShadow: isCurrent ? '0 0 0 2px rgba(59, 130, 246, 0.2)' : 'none'
+              }}
+            >
+              <div style={{ fontSize: '0.675rem', color: textColor, fontWeight: 700 }}>
+                {item.label}
+              </div>
+              <div style={{ fontSize: '0.625rem', color: '#64748b', marginTop: '0.15rem' }}>
+                {item.humanTerm}
+              </div>
+              <div style={{ fontSize: '0.65rem', fontWeight: 800, marginTop: '0.25rem', color: textColor }}>
+                {statusSymbol}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  // Render 12-Step Interactive Demo Action Bar
+  const renderDemoBar = () => {
+    const demoStepsList = [
+      { num: 1, title: '1. Patient Entry', desc: 'ASHA / CHW' },
+      { num: 2, title: '2. Triage (BP 160/100)', desc: 'High Priority' },
+      { num: 3, title: '3. Diagnostics', desc: 'Ultrasound Order' },
+      { num: 4, title: '4. Referral Hospital A', desc: 'Specialty Sent' },
+      { num: 5, title: '5. Referral Accepted', desc: 'Hospital A' },
+      { num: 6, title: '6. 🚨 SLA Breach', desc: 'Appt Delayed' },
+      { num: 7, title: '7. Care Gap & Task', desc: 'CHW Dispatched' },
+      { num: 8, title: '8. ↗ Escalate Match', desc: 'Hospital B Match' },
+      { num: 9, title: '9. Appt Confirmed B', desc: 'Care Recovered' },
+      { num: 10, title: '10. Transport & Arrival', desc: 'Patient Arrived' },
+      { num: 11, title: '11. Treatment & Meds', desc: 'Care Provided' },
+      { num: 12, title: '12. ✅ Close Care', desc: 'Journey Completed' },
+    ];
+
+    return (
+      <div className="gov-card" style={{ marginBottom: '1.25rem', backgroundColor: '#0f172a', color: 'white' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+          <div style={{ fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#38bdf8' }}>
+            <Activity size={18} color="#38bdf8" />
+            <span>Interactive Demo Action Runner — Continuous Story (Judge Control Panel)</span>
+          </div>
+          <button
+            className="btn-gov"
+            style={{ fontSize: '0.725rem', padding: '0.25rem 0.5rem', backgroundColor: '#334155', color: '#cbd5e1', border: '1px solid #475569' }}
+            onClick={() => onRunDemoStep(1)}
+          >
+            Reset Demo Journey (CFJ-1001)
+          </button>
+        </div>
+
+        <div style={{ fontSize: '0.775rem', padding: '0.45rem 0.75rem', backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '4px', color: '#e2e8f0', marginBottom: '0.75rem' }}>
+          <strong>Status:</strong> {statusMessage}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.4rem' }}>
+          {demoStepsList.map((s) => {
+            const isActive = demoStep === s.num;
+            const isDone = demoStep > s.num;
+            const isFailureStep = s.num === 6;
+
+            let btnBg = '#1e293b';
+            let btnBorder = '#334155';
+            let btnText = '#94a3b8';
+
+            if (isFailureStep) {
+              btnBg = isActive ? '#991b1b' : '#450a0a';
+              btnBorder = '#ef4444';
+              btnText = '#fca5a5';
+            } else if (isActive) {
+              btnBg = '#0284c7';
+              btnBorder = '#38bdf8';
+              btnText = '#ffffff';
+            } else if (isDone) {
+              btnBg = '#14532d';
+              btnBorder = '#22c55e';
+              btnText = '#86efac';
+            }
+
+            return (
+              <button
+                key={s.num}
+                onClick={() => onRunDemoStep(s.num)}
+                style={{
+                  backgroundColor: btnBg,
+                  border: `1px solid ${btnBorder}`,
+                  color: btnText,
+                  padding: '0.45rem 0.35rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                <div style={{ fontSize: '0.7rem', fontWeight: 700 }}>{s.title}</div>
+                <div style={{ fontSize: '0.625rem', opacity: 0.85 }}>{s.desc}</div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   // DASHBOARD VIEW
   if (activeTab === 'dashboard') {
     const totalEqCount = dashboardSummary?.totalEquipment || equipment.length || 5;
@@ -280,6 +474,12 @@ export const FacilityViews: React.FC<ViewsProps> = ({
           lastVerifiedBy={opStatus.lastVerifiedBy}
           isStale={dashboardSummary?.stale}
         />
+
+        {/* 13-Stage Timeline Component */}
+        {renderCareTimeline()}
+
+        {/* 12-Step Interactive Demo Runner Bar */}
+        {renderDemoBar()}
 
         <div className="kpi-grid">
           <div className="kpi-card" style={{ borderTopColor: '#0284c7' }}>
@@ -326,6 +526,70 @@ export const FacilityViews: React.FC<ViewsProps> = ({
           </div>
         </div>
 
+        {/* Failure & Recovery Care Gap Alert Panel */}
+        {(demoStep === 6 || demoStep === 7 || demoStep === 8) && (
+          <div className="gov-card" style={{ borderLeft: '5px solid #ef4444', backgroundColor: '#fef2f2' }}>
+            <div className="gov-card-header">
+              <div className="gov-card-title" style={{ color: '#991b1b' }}>
+                <AlertTriangle size={20} color="#ef4444" />
+                <span>⚠ CARE GAP DETECTED — SLA BREACH</span>
+              </div>
+              <span className="badge badge-unavailable">SLA BREACH (HIGH PRIORITY)</span>
+            </div>
+            <div style={{ fontSize: '0.85rem', color: '#7f1d1d', marginBottom: '0.75rem' }}>
+              <strong>Patient:</strong> Meena Devi (CF-P1001) | <strong>Care Journey:</strong> CFJ-1001 | <strong>Issue:</strong> Referral accepted by District Hospital A, but specialist appointment confirmation exceeded configured 24h SLA.
+            </div>
+
+            {/* Auto Task Dispatched Card */}
+            <div style={{ backgroundColor: 'white', border: '1px solid #fca5a5', padding: '0.75rem', borderRadius: '4px', marginBottom: '0.75rem' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#991b1b', marginBottom: '0.35rem' }}>
+                Action Task Dispatched to CHW Meera Bai:
+              </div>
+              <div style={{ fontSize: '0.8rem', color: '#334155' }}>
+                "Follow up on delayed specialist appointment for Meena Devi at District Hospital A."
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.65rem' }}>
+                <button className="btn-gov" style={{ fontSize: '0.75rem', backgroundColor: '#b45309', color: 'white' }} onClick={() => onRunDemoStep(8)}>
+                  ↗ Escalate & Reroute to Available Matching Facility
+                </button>
+              </div>
+            </div>
+
+            {/* Facility Matcher Box */}
+            {demoStep === 8 && (
+              <div style={{ backgroundColor: '#fffbebe', border: '1px solid #fcd34d', padding: '0.75rem', borderRadius: '4px' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#92400e', marginBottom: '0.35rem' }}>
+                  Deterministic Referral Matcher:
+                </div>
+                <div style={{ fontSize: '0.8rem', color: '#78350f', marginBottom: '0.5rem' }}>
+                  Requirements: Specialty: <strong>Obstetrics</strong> | Diagnostic: <strong>Ultrasound Scanner</strong> | Priority: <strong>HIGH</strong><br />
+                  Candidate Facility: <strong>District Hospital B (Rampur)</strong> — <span style={{ color: '#166534', fontWeight: 700 }}>✓ Matches referral requirements</span>
+                </div>
+                <button className="btn-gov" style={{ fontSize: '0.75rem', backgroundColor: '#166534', color: 'white' }} onClick={() => onRunDemoStep(9)}>
+                  ✓ Accept Referral & Confirm Appointment at District Hospital B
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Closed Care Success Panel */}
+        {demoStep === 12 && (
+          <div className="gov-card" style={{ borderLeft: '5px solid #16a34a', backgroundColor: '#f0fdf4' }}>
+            <div className="gov-card-header">
+              <div className="gov-card-title" style={{ color: '#14532d' }}>
+                <CheckCircle2 size={20} color="#16a34a" />
+                <span>✅ CARE JOURNEY COMPLETED & SAFELY CLOSED</span>
+              </div>
+              <span className="badge badge-available">CARE CLOSED</span>
+            </div>
+            <div style={{ fontSize: '0.85rem', color: '#166534' }}>
+              <strong>Patient:</strong> Meena Devi (CF-P1001) | <strong>Care Journey:</strong> CFJ-1001<br />
+              <strong>Outcome:</strong> Closed-loop care cycle completed successfully through District Hospital B. Follow-up recorded. Open Care Gaps: <strong>0</strong>.
+            </div>
+          </div>
+        )}
+
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
           <div className="gov-card">
             <div className="gov-card-header">
@@ -351,10 +615,10 @@ export const FacilityViews: React.FC<ViewsProps> = ({
                       <tr key={r.id}>
                         <td>Meena Devi (CF-P1001)</td>
                         <td>{r.specialtyRequired || 'Obstetrics'}</td>
-                        <td><span className="badge badge-limited">{r.status}</span></td>
+                        <td><span className={`badge ${r.appointmentStatus === 'DELAYED' ? 'badge-unavailable' : 'badge-limited'}`}>{r.appointmentStatus === 'DELAYED' ? 'SLA BREACH' : r.status}</span></td>
                         <td>
-                          <button className="btn-gov" style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }} onClick={() => onRunDemoStep(4)}>
-                            {t.actionSubmit}
+                          <button className="btn-gov" style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }} onClick={() => onRunDemoStep(demoStep >= 6 ? 8 : 5)}>
+                            {demoStep >= 6 ? 'Escalate / Reroute' : 'View Details'}
                           </button>
                         </td>
                       </tr>
@@ -394,8 +658,8 @@ export const FacilityViews: React.FC<ViewsProps> = ({
                         <td>{g.description}</td>
                         <td><span className="badge badge-unavailable">SLA BREACH</span></td>
                         <td>
-                          <button className="btn-gov" style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }} onClick={() => onRunDemoStep(7)}>
-                            {t.actionSubmit}
+                          <button className="btn-gov" style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }} onClick={() => onRunDemoStep(8)}>
+                            Escalate & Match
                           </button>
                         </td>
                       </tr>
@@ -1236,17 +1500,6 @@ export const FacilityViews: React.FC<ViewsProps> = ({
 
   // CARE JOURNEY VIEW
   if (activeTab === 'journey') {
-    const demoSteps = [
-      { num: 1, title: 'Patient Registered', desc: 'Meena (CF-P1001) registered at PHC' },
-      { num: 2, title: 'Screening Complete', desc: 'High BP flagged (140/90 mmHg)' },
-      { num: 3, title: 'Referral Created', desc: 'Referred to District Hospital' },
-      { num: 4, title: 'Appointment Booked', desc: 'Slot booked with Dr. Rajesh' },
-      { num: 5, title: 'Overdue Follow-up', desc: 'Simulate 24h SLA Breach' },
-      { num: 6, title: 'Care Gap & Task', desc: 'Task assigned to CHW' },
-      { num: 7, title: 'Follow-up Complete', desc: 'CHW visit recorded' },
-      { num: 8, title: 'Completed Care', desc: 'Journey closed safely' }
-    ];
-
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         {renderBreadcrumb('Care Journey Lifecycle')}
@@ -1257,43 +1510,73 @@ export const FacilityViews: React.FC<ViewsProps> = ({
           sourceStatus="CAREFLOW_TRANSACTION / SYNTHETIC_DEMO"
         />
 
-        <div className="gov-card">
-          <div className="gov-card-header">
-            <div className="gov-card-title">
-              <GitCommit size={18} color="#0284c7" />
-              <span>Interactive Care Journey Runner — Demo Scenario (Meena CF-P1001)</span>
-            </div>
-            <span className="provenance-tag" style={{ backgroundColor: '#fef3c7', color: '#92400e' }}>SYNTHETIC_DEMO</span>
-          </div>
-          <p style={{ fontSize: '0.8rem', color: '#475569', marginBottom: '1rem', padding: '0.5rem 0.75rem', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '4px' }}>
-            {statusMessage}
-          </p>
+        {/* 13-Stage Timeline Component */}
+        {renderCareTimeline()}
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem' }}>
-            {demoSteps.map((s) => {
-              const isActive = demoStep === s.num;
-              const isDone = demoStep > s.num;
-              return (
-                <div
-                  key={s.num}
-                  onClick={() => onRunDemoStep(s.num)}
-                  style={{
-                    backgroundColor: isActive ? '#eff6ff' : isDone ? '#f0fdf4' : 'white',
-                    border: `1px solid ${isActive ? '#0284c7' : isDone ? '#86efac' : '#cbd5e1'}`,
-                    padding: '0.65rem 0.5rem',
-                    borderRadius: '4px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: isActive ? '#0284c7' : isDone ? '#166534' : '#475569' }}>
-                    Step {s.num}: {s.title}
-                  </div>
-                  <div style={{ fontSize: '0.675rem', color: '#64748b' }}>{s.desc}</div>
+        {/* 12-Step Interactive Demo Runner Bar */}
+        {renderDemoBar()}
+
+        {/* Failure & Recovery Care Gap Alert Panel */}
+        {(demoStep === 6 || demoStep === 7 || demoStep === 8) && (
+          <div className="gov-card" style={{ borderLeft: '5px solid #ef4444', backgroundColor: '#fef2f2' }}>
+            <div className="gov-card-header">
+              <div className="gov-card-title" style={{ color: '#991b1b' }}>
+                <AlertTriangle size={20} color="#ef4444" />
+                <span>⚠ CARE GAP DETECTED — SLA BREACH</span>
+              </div>
+              <span className="badge badge-unavailable">SLA BREACH (HIGH PRIORITY)</span>
+            </div>
+            <div style={{ fontSize: '0.85rem', color: '#7f1d1d', marginBottom: '0.75rem' }}>
+              <strong>Patient:</strong> Meena Devi (CF-P1001) | <strong>Care Journey:</strong> CFJ-1001 | <strong>Issue:</strong> Referral accepted by District Hospital A, but specialist appointment confirmation exceeded configured 24h SLA.
+            </div>
+
+            <div style={{ backgroundColor: 'white', border: '1px solid #fca5a5', padding: '0.75rem', borderRadius: '4px', marginBottom: '0.75rem' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#991b1b', marginBottom: '0.35rem' }}>
+                Action Task Dispatched to CHW Meera Bai:
+              </div>
+              <div style={{ fontSize: '0.8rem', color: '#334155' }}>
+                "Follow up on delayed specialist appointment for Meena Devi at District Hospital A."
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.65rem' }}>
+                <button className="btn-gov" style={{ fontSize: '0.75rem', backgroundColor: '#b45309', color: 'white' }} onClick={() => onRunDemoStep(8)}>
+                  ↗ Escalate & Reroute to Available Matching Facility
+                </button>
+              </div>
+            </div>
+
+            {demoStep === 8 && (
+              <div style={{ backgroundColor: '#fffbebe', border: '1px solid #fcd34d', padding: '0.75rem', borderRadius: '4px' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#92400e', marginBottom: '0.35rem' }}>
+                  Deterministic Referral Matcher:
                 </div>
-              );
-            })}
+                <div style={{ fontSize: '0.8rem', color: '#78350f', marginBottom: '0.5rem' }}>
+                  Requirements: Specialty: <strong>Obstetrics</strong> | Diagnostic: <strong>Ultrasound Scanner</strong> | Priority: <strong>HIGH</strong><br />
+                  Candidate Facility: <strong>District Hospital B (Rampur)</strong> — <span style={{ color: '#166534', fontWeight: 700 }}>✓ Matches referral requirements</span>
+                </div>
+                <button className="btn-gov" style={{ fontSize: '0.75rem', backgroundColor: '#166534', color: 'white' }} onClick={() => onRunDemoStep(9)}>
+                  ✓ Accept Referral & Confirm Appointment at District Hospital B
+                </button>
+              </div>
+            )}
           </div>
-        </div>
+        )}
+
+        {/* Closed Care Success Panel */}
+        {demoStep === 12 && (
+          <div className="gov-card" style={{ borderLeft: '5px solid #16a34a', backgroundColor: '#f0fdf4' }}>
+            <div className="gov-card-header">
+              <div className="gov-card-title" style={{ color: '#14532d' }}>
+                <CheckCircle2 size={20} color="#16a34a" />
+                <span>✅ CARE JOURNEY COMPLETED & SAFELY CLOSED</span>
+              </div>
+              <span className="badge badge-available">CARE CLOSED</span>
+            </div>
+            <div style={{ fontSize: '0.85rem', color: '#166534' }}>
+              <strong>Patient:</strong> Meena Devi (CF-P1001) | <strong>Care Journey:</strong> CFJ-1001<br />
+              <strong>Outcome:</strong> Closed-loop care cycle completed successfully through District Hospital B. Follow-up recorded. Open Care Gaps: <strong>0</strong>.
+            </div>
+          </div>
+        )}
       </div>
     );
   }
