@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Lock, Building2, ShieldAlert, ArrowLeft, KeyRound } from 'lucide-react';
+import { User, Lock, Building2, ShieldAlert, ArrowLeft, KeyRound, Languages } from 'lucide-react';
 import { LanguageItem } from '../data/languages';
 import { getTranslation } from '../data/translations';
 
@@ -64,11 +64,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           <div className="login-top-bar">
             <button type="button" onClick={onChangeLanguage} className="btn-change-lang">
               <ArrowLeft size={14} />
-              <span>{t.changeLanguage} ({selectedLanguage.nameNative})</span>
+              <span>{t.changeLanguage}</span>
             </button>
-            <span className="lang-active-badge">
-              {t.activeLanguage}: <strong>{selectedLanguage.nameEnglish}</strong>
-            </span>
+            <button type="button" onClick={onChangeLanguage} className="btn-gov-secondary" style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }}>
+              <Languages size={14} color="#0284c7" />
+              <span>{selectedLanguage.nameNative} ({selectedLanguage.nameEnglish})</span>
+            </button>
           </div>
 
           <div className="entry-card-header" style={{ marginTop: '0.5rem' }}>
@@ -121,13 +122,27 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="btn-gov btn-login-submit"
-              disabled={loading}
-            >
-              {loading ? t.authenticatingText : t.signInBtn}
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+              <button
+                type="submit"
+                className="btn-gov btn-login-submit"
+                disabled={loading}
+                style={{ flex: 1 }}
+              >
+                {loading ? t.authenticatingText : t.signInBtn}
+              </button>
+
+              <button
+                type="button"
+                className="btn-gov-secondary"
+                onClick={onChangeLanguage}
+                title={t.changeLanguage}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem' }}
+              >
+                <Languages size={16} color="#0284c7" />
+                <span>{t.changeLanguage}</span>
+              </button>
+            </div>
           </form>
 
           {/* Demo Access Presets */}
