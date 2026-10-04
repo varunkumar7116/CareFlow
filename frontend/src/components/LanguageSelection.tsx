@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Languages, Check, Search, ChevronDown, ChevronUp, ArrowRight } from 'lucide-react';
 import { LanguageItem, PRIMARY_LANGUAGES, ALL_SCHEDULED_LANGUAGES } from '../data/languages';
+import { getTranslation } from '../data/translations';
 
 interface LanguageSelectionProps {
   selectedLanguage: LanguageItem;
@@ -16,31 +17,14 @@ export const LanguageSelection: React.FC<LanguageSelectionProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const t = getTranslation(selectedLanguage.code);
+
   const filteredLanguages = ALL_SCHEDULED_LANGUAGES.filter(
     (lang) =>
       lang.nameNative.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lang.nameEnglish.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lang.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const getContinueText = () => {
-    switch (selectedLanguage.code) {
-      case 'hi':
-        return 'आगे बढ़ें (Continue)';
-      case 'mr':
-        return 'पुढे जा (Continue)';
-      case 'ta':
-        return 'தொடரவும் (Continue)';
-      case 'te':
-        return 'కొనసాగించండి (Continue)';
-      case 'bn':
-        return 'এগিয়ে যান (Continue)';
-      case 'gu':
-        return 'આગળ વધો (Continue)';
-      default:
-        return 'Continue to Portal';
-    }
-  };
 
   return (
     <div className="gov-entry-container">
@@ -49,15 +33,11 @@ export const LanguageSelection: React.FC<LanguageSelectionProps> = ({
         <div className="entry-header-content">
           <div className="brand-emblem">CF</div>
           <div>
-            <h1 className="entry-brand-title">CARE FLOW</h1>
-            <p className="entry-brand-subtitle">
-              Healthcare Facility & Care Coordination Portal — Maharashtra Prototype
-            </p>
+            <h1 className="entry-brand-title">{t.portalTitle}</h1>
+            <p className="entry-brand-subtitle">{t.portalSubtitle}</p>
           </div>
         </div>
-        <div className="entry-header-tag">
-          Government Healthcare Service Coordination
-        </div>
+        <div className="entry-header-tag">{t.govTag}</div>
       </header>
 
       {/* Main Content Area */}
@@ -68,18 +48,14 @@ export const LanguageSelection: React.FC<LanguageSelectionProps> = ({
               <Languages size={24} color="#0284c7" />
             </div>
             <div>
-              <h2 className="entry-card-title">Select Language / भाषा चुनें / भाषा निवडा</h2>
-              <p className="entry-card-desc">
-                Choose your preferred interface language before signing in to the CareFlow Facility Portal.
-              </p>
+              <h2 className="entry-card-title">{t.selectLanguageTitle}</h2>
+              <p className="entry-card-desc">{t.selectLanguageDesc}</p>
             </div>
           </div>
 
           {/* Primary Prioritized Languages (Hindi, Marathi, English) */}
           <div className="primary-languages-section">
-            <label className="section-label">
-              Primary Regional & Operational Languages
-            </label>
+            <label className="section-label">{t.primaryLangHeader}</label>
             <div className="primary-lang-grid">
               {PRIMARY_LANGUAGES.map((lang) => {
                 const isSelected = selectedLanguage.code === lang.code;
@@ -114,7 +90,7 @@ export const LanguageSelection: React.FC<LanguageSelectionProps> = ({
               onClick={() => setIsExpanded(!isExpanded)}
               aria-expanded={isExpanded}
             >
-              <span>All 23 Scheduled Languages & English</span>
+              <span>{t.allLangHeader}</span>
               {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
             </button>
 
@@ -125,7 +101,7 @@ export const LanguageSelection: React.FC<LanguageSelectionProps> = ({
                   <input
                     type="text"
                     className="form-control search-input"
-                    placeholder="Search language (e.g. Gujarati, বাংলা, Tamil)..."
+                    placeholder={t.searchLangPlaceholder}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -150,7 +126,7 @@ export const LanguageSelection: React.FC<LanguageSelectionProps> = ({
                   })}
                   {filteredLanguages.length === 0 && (
                     <div className="no-lang-found">
-                      No matching language found for "{searchQuery}".
+                      {t.noLangFound} "{searchQuery}"
                     </div>
                   )}
                 </div>
@@ -161,14 +137,14 @@ export const LanguageSelection: React.FC<LanguageSelectionProps> = ({
           {/* Footer Action */}
           <div className="entry-card-footer">
             <div className="selected-lang-status">
-              Selected: <strong>{selectedLanguage.nameNative}</strong> ({selectedLanguage.nameEnglish})
+              {t.selectedText}: <strong>{selectedLanguage.nameNative}</strong> ({selectedLanguage.nameEnglish})
             </div>
             <button
               type="button"
               className="btn-gov btn-continue"
               onClick={onContinue}
             >
-              <span>{getContinueText()}</span>
+              <span>{t.continueBtn}</span>
               <ArrowRight size={16} />
             </button>
           </div>

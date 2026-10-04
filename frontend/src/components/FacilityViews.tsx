@@ -26,6 +26,9 @@ import {
   Info
 } from 'lucide-react';
 
+import { LanguageItem } from '../data/languages';
+import { getTranslation } from '../data/translations';
+
 interface ViewsProps {
   activeTab: NavTab;
   facilityDetails: any;
@@ -41,6 +44,7 @@ interface ViewsProps {
   gaps: any[];
   tasks: any[];
   statusMessage: string;
+  currentLanguage?: LanguageItem;
 }
 
 export const FacilityViews: React.FC<ViewsProps> = ({
@@ -58,7 +62,9 @@ export const FacilityViews: React.FC<ViewsProps> = ({
   gaps,
   tasks,
   statusMessage,
+  currentLanguage,
 }) => {
+  const t = getTranslation(currentLanguage?.code || 'mr');
   // Modal visibility states
   const [showAddDoctor, setShowAddDoctor] = useState(false);
   const [showAddEquipment, setShowAddEquipment] = useState(false);
@@ -277,15 +283,15 @@ export const FacilityViews: React.FC<ViewsProps> = ({
 
         <div className="kpi-grid">
           <div className="kpi-card" style={{ borderTopColor: '#0284c7' }}>
-            <div className="kpi-label">Facility Operating Status</div>
+            <div className="kpi-label">{t.operationalStatus}</div>
             <div className="kpi-value" style={{ fontSize: '1.25rem', color: '#166534' }}>
-              {opStatus.operatingStatus}
+              {opStatus.operatingStatus === 'OPERATIONAL' ? t.statusOperational : opStatus.operatingStatus}
             </div>
             <div className="kpi-sub">Beds Available: {opStatus.capacityAvailableBeds} / {opStatus.capacityTotalBeds}</div>
           </div>
 
           <div className="kpi-card" style={{ borderTopColor: '#16a34a' }}>
-            <div className="kpi-label">Doctors & Specialists</div>
+            <div className="kpi-label">{t.activeDoctors}</div>
             <div className="kpi-value">
               {dashboardSummary?.availableDoctors ?? professionals.filter((p: any) => p.availabilityStatus === 'AVAILABLE').length}
               <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}> / {dashboardSummary?.totalDoctors || professionals.length || 3} Active</span>
@@ -294,7 +300,7 @@ export const FacilityViews: React.FC<ViewsProps> = ({
           </div>
 
           <div className="kpi-card" style={{ borderTopColor: '#d97706' }}>
-            <div className="kpi-label">Diagnostic Services</div>
+            <div className="kpi-label">{t.diagnosticsTitle}</div>
             <div className="kpi-value">
               {dashboardSummary?.availableDiagnostics ?? diagnostics.filter((d: any) => d.availability === 'AVAILABLE').length}
               <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}> / {dashboardSummary?.totalDiagnostics || diagnostics.length || 4} Available</span>
@@ -303,7 +309,7 @@ export const FacilityViews: React.FC<ViewsProps> = ({
           </div>
 
           <div className="kpi-card" style={{ borderTopColor: '#0891b2' }}>
-            <div className="kpi-label">Equipment & Resources</div>
+            <div className="kpi-label">{t.equipmentAvailable}</div>
             <div className="kpi-value">
               {availEqCount}
               <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}> / {totalEqCount} Operational</span>

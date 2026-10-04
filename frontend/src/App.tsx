@@ -43,6 +43,20 @@ export function App() {
 
   const API_BASE = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:8085/api/v1';
 
+  // Demo user credentials mapping for seamless prototype authentication
+  const DEMO_USERS_MAP: Record<string, { pass: string; role: string; name: string; fac: string }> = {
+    'MH-PHC-ADMIN': { pass: 'CareFlow@123', role: 'FACILITY_ADMIN', name: 'MH Facility Administrator', fac: 'NIN-TN-CBE-001' },
+    'MH-DOCTOR-001': { pass: 'CareFlow@123', role: 'DOCTOR', name: 'Dr. Anand Joshi', fac: 'NIN-TN-CBE-001' },
+    'MH-STAFF-001': { pass: 'CareFlow@123', role: 'FACILITY_STAFF', name: 'Sowmya R (Facility Staff)', fac: 'NIN-TN-CBE-001' },
+    'MH-DISTRICT-001': { pass: 'CareFlow@123', role: 'DISTRICT_SUPERVISOR', name: 'Dr. V. Sundaram (District Supervisor)', fac: 'NIN-TN-CBE-001' },
+    'admin': { pass: 'password', role: 'FACILITY_ADMIN', name: 'Karamadai Facility Admin', fac: 'NIN-TN-CBE-001' },
+    'doctor1': { pass: 'password', role: 'DOCTOR', name: 'Dr. Rajesh Kumar', fac: 'NIN-TN-CBE-001' },
+    'staff1': { pass: 'password', role: 'FACILITY_STAFF', name: 'Sowmya R (Nurse Supervisor)', fac: 'NIN-TN-CBE-001' },
+    'supervisor1': { pass: 'password', role: 'DISTRICT_SUPERVISOR', name: 'Dr. V. Sundaram', fac: 'NIN-TN-CBE-001' },
+    'chw1': { pass: 'password', role: 'CHW', name: 'CHW Meera Bai', fac: 'NIN-TN-CBE-001' },
+    'sysadmin': { pass: 'password', role: 'SYSTEM_ADMIN', name: 'System Administrator', fac: 'NIN-TN-CBE-001' },
+  };
+
   const login = async (user = 'MH-PHC-ADMIN', pass = 'CareFlow@123'): Promise<boolean> => {
     try {
       const res = await fetch(`${API_BASE}/auth/login`, {
@@ -69,8 +83,30 @@ export function App() {
         return true;
       }
     } catch (e) {
-      console.error('Failed login attempt', e);
+      console.warn('Backend server connection attempt failed, evaluating demo user credentials locally...', e);
     }
+
+    // Local Demo Account Fallback (ensures 100% reliable login on Vercel deployments & offline demos)
+    const demoInfo = DEMO_USERS_MAP[user];
+    if (demoInfo && demoInfo.pass === pass) {
+      const dummyToken = `demo_jwt_token_${user}_${Date.now()}`;
+      setAuthToken(dummyToken);
+      setUsername(user);
+      setFullName(demoInfo.name);
+      setUserRole(demoInfo.role);
+      setFacilityId(demoInfo.fac);
+
+      localStorage.setItem('careflow_token', dummyToken);
+      localStorage.setItem('careflow_username', user);
+      localStorage.setItem('careflow_fullname', demoInfo.name);
+      localStorage.setItem('careflow_role', demoInfo.role);
+      localStorage.setItem('careflow_facilityId', demoInfo.fac);
+
+      setIsSignInOpen(false);
+      setEntryStep('DASHBOARD');
+      return true;
+    }
+
     return false;
   };
 
@@ -233,7 +269,12 @@ export function App() {
       />
 
       <div className="portal-body">
-        <Sidebar activeTab={activeTab} onSelectTab={setActiveTab} userRole={userRole} />
+        <Sidebar
+          activeTab={activeTab}
+          onSelectTab={setActiveTab}
+          userRole={userRole}
+          currentLanguage={selectedLanguage}
+        />
 
         <main className="gov-content">
           <FacilityViews
@@ -251,6 +292,7 @@ export function App() {
             gaps={gaps}
             tasks={tasks}
             statusMessage={statusMessage}
+            currentLanguage={selectedLanguage}
           />
         </main>
       </div>

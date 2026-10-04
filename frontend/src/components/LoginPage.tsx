@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { User, Lock, Building2, ShieldAlert, ArrowLeft, KeyRound, CheckCircle2 } from 'lucide-react';
+import { User, Lock, Building2, ShieldAlert, ArrowLeft, KeyRound } from 'lucide-react';
 import { LanguageItem } from '../data/languages';
+import { getTranslation } from '../data/translations';
 
 interface LoginPageProps {
   selectedLanguage: LanguageItem;
@@ -18,6 +19,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const t = getTranslation(selectedLanguage.code);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -26,11 +29,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
       const success = await onLogin(username, password);
       setLoading(false);
       if (!success) {
-        setErrorMsg('Invalid User ID or password. Please check your credentials and try again.');
+        setErrorMsg(t.invalidCredsError);
       }
     } catch (err) {
       setLoading(false);
-      setErrorMsg('Unable to connect to CareFlow services. Please try again.');
+      setErrorMsg(t.connError);
     }
   };
 
@@ -47,15 +50,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({
         <div className="entry-header-content">
           <div className="brand-emblem">CF</div>
           <div>
-            <h1 className="entry-brand-title">CARE FLOW</h1>
-            <p className="entry-brand-subtitle">
-              Healthcare Facility & Care Coordination Portal — Maharashtra Prototype
-            </p>
+            <h1 className="entry-brand-title">{t.portalTitle}</h1>
+            <p className="entry-brand-subtitle">{t.portalSubtitle}</p>
           </div>
         </div>
-        <div className="entry-header-tag">
-          Government Healthcare Service Coordination
-        </div>
+        <div className="entry-header-tag">{t.govTag}</div>
       </header>
 
       {/* Login Card Wrapper */}
@@ -65,10 +64,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           <div className="login-top-bar">
             <button type="button" onClick={onChangeLanguage} className="btn-change-lang">
               <ArrowLeft size={14} />
-              <span>Change Language ({selectedLanguage.nameNative})</span>
+              <span>{t.changeLanguage} ({selectedLanguage.nameNative})</span>
             </button>
             <span className="lang-active-badge">
-              Active: <strong>{selectedLanguage.nameEnglish}</strong>
+              {t.activeLanguage}: <strong>{selectedLanguage.nameEnglish}</strong>
             </span>
           </div>
 
@@ -77,10 +76,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               <Building2 size={24} color="#0284c7" />
             </div>
             <div>
-              <h2 className="entry-card-title">CareFlow</h2>
-              <p className="entry-card-desc">
-                Healthcare Facility & Care Coordination Portal
-              </p>
+              <h2 className="entry-card-title">{t.loginHeaderTitle}</h2>
+              <p className="entry-card-desc">{t.loginHeaderDesc}</p>
             </div>
           </div>
 
@@ -93,14 +90,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({
 
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
-              <label htmlFor="userIdInput">Facility ID / User ID</label>
+              <label htmlFor="userIdInput">{t.facilityUserIdLabel}</label>
               <div className="input-with-icon">
                 <User size={16} className="input-icon" />
                 <input
                   id="userIdInput"
                   type="text"
                   className="form-control padded-input"
-                  placeholder="Enter Facility / User ID (e.g. MH-PHC-ADMIN)"
+                  placeholder="e.g. MH-PHC-ADMIN"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
@@ -109,14 +106,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             </div>
 
             <div className="form-group">
-              <label htmlFor="passwordInput">Password</label>
+              <label htmlFor="passwordInput">{t.passwordLabel}</label>
               <div className="input-with-icon">
                 <Lock size={16} className="input-icon" />
                 <input
                   id="passwordInput"
                   type="password"
                   className="form-control padded-input"
-                  placeholder="Enter Password"
+                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -129,7 +126,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               className="btn-gov btn-login-submit"
               disabled={loading}
             >
-              {loading ? 'Authenticating Facility Credentials...' : 'Sign In to Portal'}
+              {loading ? t.authenticatingText : t.signInBtn}
             </button>
           </form>
 
@@ -138,11 +135,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             <div className="demo-access-header">
               <div className="demo-header-title">
                 <KeyRound size={16} color="#0284c7" />
-                <span>Demo Access</span>
+                <span>{t.demoAccessTitle}</span>
               </div>
-              <span className="demo-disclaimer-badge">
-                Demo credentials — for prototype demonstration only.
-              </span>
+              <span className="demo-disclaimer-badge">{t.demoDisclaimer}</span>
             </div>
 
             <div className="demo-presets-grid">
@@ -151,7 +146,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 className={`demo-preset-btn ${username === 'MH-PHC-ADMIN' ? 'active' : ''}`}
                 onClick={() => setDemoPreset('MH-PHC-ADMIN', 'CareFlow@123')}
               >
-                <div className="preset-role">Facility Administrator</div>
+                <div className="preset-role">{t.roleAdmin}</div>
                 <div className="preset-meta">
                   <span>ID: <strong>MH-PHC-ADMIN</strong></span>
                   <span>Pass: <strong>CareFlow@123</strong></span>
@@ -163,7 +158,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 className={`demo-preset-btn ${username === 'MH-DOCTOR-001' ? 'active' : ''}`}
                 onClick={() => setDemoPreset('MH-DOCTOR-001', 'CareFlow@123')}
               >
-                <div className="preset-role">Doctor</div>
+                <div className="preset-role">{t.roleDoctor}</div>
                 <div className="preset-meta">
                   <span>ID: <strong>MH-DOCTOR-001</strong></span>
                   <span>Pass: <strong>CareFlow@123</strong></span>
@@ -175,7 +170,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 className={`demo-preset-btn ${username === 'MH-STAFF-001' ? 'active' : ''}`}
                 onClick={() => setDemoPreset('MH-STAFF-001', 'CareFlow@123')}
               >
-                <div className="preset-role">Facility Staff</div>
+                <div className="preset-role">{t.roleStaff}</div>
                 <div className="preset-meta">
                   <span>ID: <strong>MH-STAFF-001</strong></span>
                   <span>Pass: <strong>CareFlow@123</strong></span>
@@ -187,7 +182,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
                 className={`demo-preset-btn ${username === 'MH-DISTRICT-001' ? 'active' : ''}`}
                 onClick={() => setDemoPreset('MH-DISTRICT-001', 'CareFlow@123')}
               >
-                <div className="preset-role">District Supervisor</div>
+                <div className="preset-role">{t.roleSupervisor}</div>
                 <div className="preset-meta">
                   <span>ID: <strong>MH-DISTRICT-001</strong></span>
                   <span>Pass: <strong>CareFlow@123</strong></span>

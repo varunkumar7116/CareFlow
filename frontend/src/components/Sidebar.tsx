@@ -11,9 +11,10 @@ import {
   AlertTriangle,
   GitCommit,
   FileText,
-  ShieldAlert,
   Settings
 } from 'lucide-react';
+import { LanguageItem } from '../data/languages';
+import { getTranslation } from '../data/translations';
 
 export type NavTab =
   | 'dashboard'
@@ -33,22 +34,25 @@ interface SidebarProps {
   activeTab: NavTab;
   onSelectTab: (tab: NavTab) => void;
   userRole?: string;
+  currentLanguage?: LanguageItem;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab, userRole }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onSelectTab, userRole, currentLanguage }) => {
+  const t = getTranslation(currentLanguage?.code || 'mr');
+
   const items: { tab: NavTab; label: string; icon: React.ReactNode; roles?: string[] }[] = [
-    { tab: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
-    { tab: 'facility', label: 'Facility Profile', icon: <Building size={16} /> },
-    { tab: 'services', label: 'Services', icon: <Stethoscope size={16} /> },
-    { tab: 'doctors', label: 'Doctors / Staff', icon: <Users size={16} /> },
-    { tab: 'diagnostics', label: 'Diagnostics', icon: <Activity size={16} /> },
-    { tab: 'equipment', label: 'Equipment', icon: <Wrench size={16} /> },
-    { tab: 'appointments', label: 'Appointments', icon: <Calendar size={16} /> },
-    { tab: 'referrals', label: 'Referrals', icon: <Send size={16} /> },
-    { tab: 'caregaps', label: 'Care Tasks & Gaps', icon: <AlertTriangle size={16} /> },
-    { tab: 'journey', label: 'Care Journey', icon: <GitCommit size={16} /> },
-    { tab: 'audit', label: 'Audit Log', icon: <FileText size={16} /> },
-    { tab: 'admin', label: 'Administration', icon: <Settings size={16} />, roles: ['FACILITY_ADMIN', 'DISTRICT_SUPERVISOR', 'SYSTEM_ADMIN', 'ADMIN'] },
+    { tab: 'dashboard', label: t.tabDashboard, icon: <LayoutDashboard size={16} /> },
+    { tab: 'facility', label: t.tabFacility, icon: <Building size={16} /> },
+    { tab: 'services', label: t.tabServices, icon: <Stethoscope size={16} /> },
+    { tab: 'doctors', label: t.tabDoctors, icon: <Users size={16} /> },
+    { tab: 'diagnostics', label: t.tabDiagnostics, icon: <Activity size={16} /> },
+    { tab: 'equipment', label: t.tabEquipment, icon: <Wrench size={16} /> },
+    { tab: 'appointments', label: t.tabAppointments, icon: <Calendar size={16} /> },
+    { tab: 'referrals', label: t.tabReferrals, icon: <Send size={16} /> },
+    { tab: 'caregaps', label: t.tabCareGaps, icon: <AlertTriangle size={16} /> },
+    { tab: 'journey', label: t.tabCareJourney, icon: <GitCommit size={16} /> },
+    { tab: 'audit', label: t.tabAuditLog, icon: <FileText size={16} /> },
+    { tab: 'admin', label: t.tabAdmin, icon: <Settings size={16} />, roles: ['FACILITY_ADMIN', 'DISTRICT_SUPERVISOR', 'SYSTEM_ADMIN', 'ADMIN'] },
   ];
 
   return (

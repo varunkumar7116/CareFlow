@@ -1,6 +1,7 @@
 import React from 'react';
 import { Building2, PhoneCall, LogOut, Languages } from 'lucide-react';
 import { LanguageItem } from '../data/languages';
+import { getTranslation } from '../data/translations';
 
 interface HeaderProps {
   facilityName: string;
@@ -25,13 +26,15 @@ export const Header: React.FC<HeaderProps> = ({
   currentLanguage,
   onChangeLanguage,
 }) => {
+  const t = getTranslation(currentLanguage?.code || 'mr');
+
   return (
     <header className="gov-header">
       <div className="header-brand">
         <div className="brand-emblem">CF</div>
         <div className="brand-titles">
-          <h1>CARE FLOW</h1>
-          <p>Healthcare Coordination Platform — Maharashtra Prototype</p>
+          <h1>{t.portalTitle}</h1>
+          <p>{t.portalSubtitle}</p>
         </div>
       </div>
 
@@ -42,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({
             {isAuthenticated ? (
               <span>{userFullName} • <strong>{userRole}</strong></span>
             ) : (
-              <span>Guest Operational Mode</span>
+              <span>{t.guestMode}</span>
             )}
           </div>
         </div>
@@ -52,7 +55,7 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onChangeLanguage}
             className="btn-gov-secondary"
             style={{ backgroundColor: '#1e293b', color: '#e2e8f0', border: '1px solid #475569' }}
-            title="Change Interface Language"
+            title={t.changeLanguage}
           >
             <Languages size={14} color="#38bdf8" />
             <span>{currentLanguage.nameNative} ({currentLanguage.nameEnglish})</span>
@@ -65,21 +68,20 @@ export const Header: React.FC<HeaderProps> = ({
           style={{ backgroundColor: '#334155', color: 'white', border: '1px solid #475569' }}
         >
           <PhoneCall size={14} color="#38bdf8" />
-          <span>IVR Phone Simulator</span>
+          <span>{t.ivrSimulator}</span>
         </button>
 
         {isAuthenticated ? (
           <button onClick={onSignOut} className="btn-gov-secondary" style={{ color: '#fda4af' }}>
             <LogOut size={14} />
-            <span>Sign Out</span>
+            <span>{t.signOut}</span>
           </button>
         ) : (
           <button onClick={onOpenSignIn} className="btn-gov">
-            <span>Sign In</span>
+            <span>{t.signIn}</span>
           </button>
         )}
       </div>
     </header>
   );
 };
-
