@@ -1,0 +1,202 @@
+import React, { useState } from 'react';
+import { User, Lock, Building2, ShieldAlert, ArrowLeft, KeyRound, CheckCircle2 } from 'lucide-react';
+import { LanguageItem } from '../data/languages';
+
+interface LoginPageProps {
+  selectedLanguage: LanguageItem;
+  onChangeLanguage: () => void;
+  onLogin: (user: string, pass: string) => Promise<boolean>;
+}
+
+export const LoginPage: React.FC<LoginPageProps> = ({
+  selectedLanguage,
+  onChangeLanguage,
+  onLogin,
+}) => {
+  const [username, setUsername] = useState('MH-PHC-ADMIN');
+  const [password, setPassword] = useState('CareFlow@123');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg('');
+    try {
+      const success = await onLogin(username, password);
+      setLoading(false);
+      if (!success) {
+        setErrorMsg('Invalid User ID or password. Please check your credentials and try again.');
+      }
+    } catch (err) {
+      setLoading(false);
+      setErrorMsg('Unable to connect to CareFlow services. Please try again.');
+    }
+  };
+
+  const setDemoPreset = (u: string, p: string = 'CareFlow@123') => {
+    setUsername(u);
+    setPassword(p);
+    setErrorMsg('');
+  };
+
+  return (
+    <div className="gov-entry-container">
+      {/* Header Banner */}
+      <header className="gov-entry-header">
+        <div className="entry-header-content">
+          <div className="brand-emblem">CF</div>
+          <div>
+            <h1 className="entry-brand-title">CARE FLOW</h1>
+            <p className="entry-brand-subtitle">
+              Healthcare Facility & Care Coordination Portal — Maharashtra Prototype
+            </p>
+          </div>
+        </div>
+        <div className="entry-header-tag">
+          Government Healthcare Service Coordination
+        </div>
+      </header>
+
+      {/* Login Card Wrapper */}
+      <div className="gov-entry-card-wrapper">
+        <div className="gov-card entry-card">
+          {/* Card Top: Change Language Bar */}
+          <div className="login-top-bar">
+            <button type="button" onClick={onChangeLanguage} className="btn-change-lang">
+              <ArrowLeft size={14} />
+              <span>Change Language ({selectedLanguage.nameNative})</span>
+            </button>
+            <span className="lang-active-badge">
+              Active: <strong>{selectedLanguage.nameEnglish}</strong>
+            </span>
+          </div>
+
+          <div className="entry-card-header" style={{ marginTop: '0.5rem' }}>
+            <div className="entry-icon-box">
+              <Building2 size={24} color="#0284c7" />
+            </div>
+            <div>
+              <h2 className="entry-card-title">CareFlow</h2>
+              <p className="entry-card-desc">
+                Healthcare Facility & Care Coordination Portal
+              </p>
+            </div>
+          </div>
+
+          {errorMsg && (
+            <div className="login-error-banner">
+              <ShieldAlert size={18} />
+              <span>{errorMsg}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="login-form">
+            <div className="form-group">
+              <label htmlFor="userIdInput">Facility ID / User ID</label>
+              <div className="input-with-icon">
+                <User size={16} className="input-icon" />
+                <input
+                  id="userIdInput"
+                  type="text"
+                  className="form-control padded-input"
+                  placeholder="Enter Facility / User ID (e.g. MH-PHC-ADMIN)"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="passwordInput">Password</label>
+              <div className="input-with-icon">
+                <Lock size={16} className="input-icon" />
+                <input
+                  id="passwordInput"
+                  type="password"
+                  className="form-control padded-input"
+                  placeholder="Enter Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="btn-gov btn-login-submit"
+              disabled={loading}
+            >
+              {loading ? 'Authenticating Facility Credentials...' : 'Sign In to Portal'}
+            </button>
+          </form>
+
+          {/* Demo Access Presets */}
+          <div className="demo-access-container">
+            <div className="demo-access-header">
+              <div className="demo-header-title">
+                <KeyRound size={16} color="#0284c7" />
+                <span>Demo Access</span>
+              </div>
+              <span className="demo-disclaimer-badge">
+                Demo credentials — for prototype demonstration only.
+              </span>
+            </div>
+
+            <div className="demo-presets-grid">
+              <button
+                type="button"
+                className={`demo-preset-btn ${username === 'MH-PHC-ADMIN' ? 'active' : ''}`}
+                onClick={() => setDemoPreset('MH-PHC-ADMIN', 'CareFlow@123')}
+              >
+                <div className="preset-role">Facility Administrator</div>
+                <div className="preset-meta">
+                  <span>ID: <strong>MH-PHC-ADMIN</strong></span>
+                  <span>Pass: <strong>CareFlow@123</strong></span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                className={`demo-preset-btn ${username === 'MH-DOCTOR-001' ? 'active' : ''}`}
+                onClick={() => setDemoPreset('MH-DOCTOR-001', 'CareFlow@123')}
+              >
+                <div className="preset-role">Doctor</div>
+                <div className="preset-meta">
+                  <span>ID: <strong>MH-DOCTOR-001</strong></span>
+                  <span>Pass: <strong>CareFlow@123</strong></span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                className={`demo-preset-btn ${username === 'MH-STAFF-001' ? 'active' : ''}`}
+                onClick={() => setDemoPreset('MH-STAFF-001', 'CareFlow@123')}
+              >
+                <div className="preset-role">Facility Staff</div>
+                <div className="preset-meta">
+                  <span>ID: <strong>MH-STAFF-001</strong></span>
+                  <span>Pass: <strong>CareFlow@123</strong></span>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                className={`demo-preset-btn ${username === 'MH-DISTRICT-001' ? 'active' : ''}`}
+                onClick={() => setDemoPreset('MH-DISTRICT-001', 'CareFlow@123')}
+              >
+                <div className="preset-role">District Supervisor</div>
+                <div className="preset-meta">
+                  <span>ID: <strong>MH-DISTRICT-001</strong></span>
+                  <span>Pass: <strong>CareFlow@123</strong></span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -118,6 +118,12 @@ public class DataInitializer implements CommandLineRunner {
         seedUser("USER-SUP-001", "supervisor1", "password", "Dr. V. Sundaram (District Supervisor)", Role.DISTRICT_SUPERVISOR, "+919876543203", "en", null);
         seedUser("USER-SYS-001", "sysadmin", "password", "System Administrator", Role.SYSTEM_ADMIN, "+919876543204", "en", null);
 
+        // Seed Maharashtra Prototype Demo Credentials
+        seedUser("USER-MH-ADMIN-001", "MH-PHC-ADMIN", "CareFlow@123", "MH Facility Administrator", Role.FACILITY_ADMIN, "+919876543220", "mr", "NIN-TN-CBE-001");
+        seedUser("USER-MH-DOC-001", "MH-DOCTOR-001", "CareFlow@123", "Dr. Anand Joshi", Role.DOCTOR, "+919876543221", "mr", "NIN-TN-CBE-001");
+        seedUser("USER-MH-STAFF-001", "MH-STAFF-001", "CareFlow@123", "Sowmya R (Facility Staff)", Role.FACILITY_STAFF, "+919876543222", "mr", "NIN-TN-CBE-001");
+        seedUser("USER-MH-SUP-001", "MH-DISTRICT-001", "CareFlow@123", "Dr. V. Sundaram (District Supervisor)", Role.DISTRICT_SUPERVISOR, "+919876543223", "mr", null);
+
         User chwUser = seedUser("USER-CHW-001", "chw1", "password", "CHW Meera Bai", Role.CHW, "+919876543210", "hi", "NIN-TN-CBE-001");
         User facilityUser = seedUser("USER-FACILITY-001", "facility1", "password", "Dr. Sharma (District Hospital Rampur)", Role.FACILITY_STAFF, "+919876543211", "en", "NIN-UP-RMP-002");
 

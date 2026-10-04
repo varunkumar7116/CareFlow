@@ -1,5 +1,6 @@
 import React from 'react';
-import { Building2, PhoneCall, LogOut, ShieldCheck } from 'lucide-react';
+import { Building2, PhoneCall, LogOut, Languages } from 'lucide-react';
+import { LanguageItem } from '../data/languages';
 
 interface HeaderProps {
   facilityName: string;
@@ -9,6 +10,8 @@ interface HeaderProps {
   onOpenSignIn: () => void;
   onSignOut: () => void;
   isAuthenticated: boolean;
+  currentLanguage?: LanguageItem;
+  onChangeLanguage?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -19,6 +22,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenSignIn,
   onSignOut,
   isAuthenticated,
+  currentLanguage,
+  onChangeLanguage,
 }) => {
   return (
     <header className="gov-header">
@@ -26,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="brand-emblem">CF</div>
         <div className="brand-titles">
           <h1>CARE FLOW</h1>
-          <p>Healthcare Coordination Platform — Facility Operational Portal</p>
+          <p>Healthcare Coordination Platform — Maharashtra Prototype</p>
         </div>
       </div>
 
@@ -41,6 +46,18 @@ export const Header: React.FC<HeaderProps> = ({
             )}
           </div>
         </div>
+
+        {currentLanguage && onChangeLanguage && (
+          <button
+            onClick={onChangeLanguage}
+            className="btn-gov-secondary"
+            style={{ backgroundColor: '#1e293b', color: '#e2e8f0', border: '1px solid #475569' }}
+            title="Change Interface Language"
+          >
+            <Languages size={14} color="#38bdf8" />
+            <span>{currentLanguage.nameNative} ({currentLanguage.nameEnglish})</span>
+          </button>
+        )}
 
         <button
           onClick={onOpenIVR}
@@ -65,3 +82,4 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+

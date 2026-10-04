@@ -4,15 +4,30 @@ import { Sidebar, NavTab } from './components/Sidebar';
 import { FacilityViews } from './components/FacilityViews';
 import { SignInModal } from './components/SignInModal';
 import { IVRSimulatorModal } from './components/IVRSimulatorModal';
+import { LanguageSelection } from './components/LanguageSelection';
+import { LoginPage } from './components/LoginPage';
+import { LanguageItem, PRIMARY_LANGUAGES, ALL_SCHEDULED_LANGUAGES } from './data/languages';
+
+type EntryStep = 'LANGUAGE_SELECTION' | 'LOGIN' | 'DASHBOARD';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isIVROpen, setIsIVROpen] = useState(false);
 
-  const [authToken, setAuthToken] = useState<string>(localStorage.getItem('careflow_token') || '');
-  const [username, setUsername] = useState<string>(localStorage.getItem('careflow_username') || 'admin');
-  const [fullName, setFullName] = useState<string>(localStorage.getItem('careflow_fullname') || 'Karamadai Facility Admin');
+  const savedToken = localStorage.getItem('careflow_token') || '';
+  const savedLangCode = localStorage.getItem('careflow_language') || '';
+
+  const initialLang = ALL_SCHEDULED_LANGUAGES.find((l) => l.code === savedLangCode) || PRIMARY_LANGUAGES[1]; // Marathi default
+
+  const [selectedLanguage, setSelectedLanguage] = useState<LanguageItem>(initialLang);
+  const [entryStep, setEntryStep] = useState<EntryStep>(
+    savedToken ? 'DASHBOARD' : (savedLangCode ? 'LOGIN' : 'LANGUAGE_SELECTION')
+  );
+
+  const [authToken, setAuthToken] = useState<string>(savedToken);
+  const [username, setUsername] = useState<string>(localStorage.getItem('careflow_username') || 'MH-PHC-ADMIN');
+  const [fullName, setFullName] = useState<string>(localStorage.getItem('careflow_fullname') || 'MH Facility Administrator');
   const [userRole, setUserRole] = useState<string>(localStorage.getItem('careflow_role') || 'FACILITY_ADMIN');
   const [facilityId, setFacilityId] = useState<string>(localStorage.getItem('careflow_facilityId') || 'NIN-TN-CBE-001');
 
@@ -26,14 +41,14 @@ export function App() {
   const [demoStep, setDemoStep] = useState<number>(1);
   const [statusMessage, setStatusMessage] = useState('CareFlow Operational Facility Portal initialized with seed scenario for Meena (CF-P1001).');
 
-  const API_BASE = 'http://localhost:8085/api/v1';
+  const API_BASE = (import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:8085/api/v1';
 
-  const login = async (user = 'admin', pass = 'password'): Promise<boolean> => {
+  const login = async (user = 'MH-PHC-ADMIN', pass = 'CareFlow@123'): Promise<boolean> => {
     try {
       const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: user, password: pass })
+        body: JSON.stringify({ username: user, password: pass }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -50,6 +65,7 @@ export function App() {
         localStorage.setItem('careflow_facilityId', data.facilityId || 'NIN-TN-CBE-001');
 
         setIsSignInOpen(false);
+        setEntryStep('DASHBOARD');
         return true;
       }
     } catch (e) {
@@ -61,7 +77,6 @@ export function App() {
   const authFetch = async (url: string, options: RequestInit = {}) => {
     let token = authToken;
     if (!token) {
-      await login();
       token = localStorage.getItem('careflow_token') || '';
     }
     const headers: Record<string, string> = {
@@ -72,7 +87,6 @@ export function App() {
     }
     let res = await fetch(url, { ...options, headers });
     if (res.status === 401 || res.status === 403) {
-      await login();
       token = localStorage.getItem('careflow_token') || '';
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
@@ -115,12 +129,15 @@ export function App() {
   };
 
   useEffect(() => {
-    if (!authToken) {
-      login();
-    } else {
+    if (authToken) {
       refreshData();
     }
-  }, [facilityId]);
+  }, [authToken, facilityId]);
+
+  const handleSelectLanguage = (lang: LanguageItem) => {
+    setSelectedLanguage(lang);
+    localStorage.setItem('careflow_language', lang.code);
+  };
 
   const handleRunDemoStep = async (stepNum: number) => {
     setDemoStep(stepNum);
@@ -176,10 +193,30 @@ export function App() {
     setFullName('');
     setUserRole('');
     setFacilityDetails(null);
-    setIsSignInOpen(true);
+    setEntryStep('LOGIN');
   };
 
   const facName = facilityDetails?.governmentReference?.name || 'Government PHC, Karamadai';
+
+  if (entryStep === 'LANGUAGE_SELECTION') {
+    return (
+      <LanguageSelection
+        selectedLanguage={selectedLanguage}
+        onSelectLanguage={handleSelectLanguage}
+        onContinue={() => setEntryStep('LOGIN')}
+      />
+    );
+  }
+
+  if (entryStep === 'LOGIN') {
+    return (
+      <LoginPage
+        selectedLanguage={selectedLanguage}
+        onChangeLanguage={() => setEntryStep('LANGUAGE_SELECTION')}
+        onLogin={login}
+      />
+    );
+  }
 
   return (
     <div className="portal-wrapper">
@@ -191,6 +228,8 @@ export function App() {
         onOpenSignIn={() => setIsSignInOpen(true)}
         onSignOut={handleSignOut}
         isAuthenticated={!!authToken}
+        currentLanguage={selectedLanguage}
+        onChangeLanguage={() => setEntryStep('LANGUAGE_SELECTION')}
       />
 
       <div className="portal-body">
