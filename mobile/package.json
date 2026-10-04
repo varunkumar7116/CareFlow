@@ -6,13 +6,13 @@
   "main": "index.js",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "dev": "vite --port 3001 --host",
     "build": "vite build",
     "preview": "vite preview",
     "build:apk": "npx eas-cli build -p android --profile preview",
-    "postinstall": "node scripts/patch-expo.js"
+    "postinstall": "node scripts/generate-assets.js && node scripts/patch-expo.js"
   },
   "dependencies": {
     "expo": "~50.0.0",
